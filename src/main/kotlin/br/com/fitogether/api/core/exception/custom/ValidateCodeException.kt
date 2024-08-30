@@ -6,4 +6,4 @@ data class ValidateCodeException(
     override val message: String,
     val internalCode: String,
     val statusCode: HttpStatus = HttpStatus.BAD_REQUEST
-)  :RuntimeException()
+) : RuntimeException()

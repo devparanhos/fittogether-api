@@ -12,6 +12,9 @@ data class ValidationCodeEntity(
     @Column(name = "email", unique = true, nullable = false)
     var email: String = "",
 
+    @Column(name = "validated", nullable = false)
+    var validated: Boolean = false,
+
     @Column(name="code", nullable = false)
     var code: Int = 0,
 

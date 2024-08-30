@@ -4,6 +4,7 @@ import br.com.fitogether.api.domain.model.request.user.CreateUserRequest
 import br.com.fitogether.api.domain.model.request.user.ValidateCodeRequest
 import br.com.fitogether.api.domain.model.response.ValidateEmailResponse
 import br.com.fitogether.api.domain.model.request.user.ValidateEmailRequest
+import br.com.fitogether.api.domain.model.response.ValidateCodeResponse
 import br.com.fitogether.api.domain.service.user.UserService
 
 import jakarta.validation.Valid
@@ -25,12 +26,12 @@ class UserController(
     }
 
     @PostMapping(value = ["validateCode"])
-    fun validateCode(@RequestBody @Valid request: ValidateCodeRequest) {
-        userService.validateCode(request = request)
+    fun validateCode(@RequestBody @Valid request: ValidateCodeRequest) : ValidateCodeResponse {
+        return userService.validateCode(request = request)
     }
 
     @PostMapping
-    fun create(@RequestBody request: CreateUserRequest) {
+    fun create(@RequestBody @Valid request: CreateUserRequest) {
         userService.createUser(request = request)
     }
 }

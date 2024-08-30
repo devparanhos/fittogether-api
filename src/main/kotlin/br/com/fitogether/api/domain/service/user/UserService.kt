@@ -1,12 +1,16 @@
 package br.com.fitogether.api.domain.service.user
 
+import br.com.fitogether.api.core.enums.GeneralError
+import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
+import br.com.fitogether.api.core.exception.custom.ValidateCodeException
 import br.com.fitogether.api.data.mapper.user.toEntity
 import br.com.fitogether.api.data.mapper.user.toValidateEmailResponse
 import br.com.fitogether.api.data.repository.user.UserRepository
 import br.com.fitogether.api.domain.model.request.user.CreateUserRequest
 import br.com.fitogether.api.domain.model.request.user.ValidateCodeRequest
 import br.com.fitogether.api.domain.model.request.user.ValidateEmailRequest
+import br.com.fitogether.api.domain.model.response.ValidateCodeResponse
 import br.com.fitogether.api.domain.model.response.ValidateEmailResponse
 import br.com.fitogether.api.domain.service.code.ValidationCodeService
 
@@ -32,11 +36,26 @@ class UserService(
         }
     }
 
-    fun validateCode(request: ValidateCodeRequest) {
-        validationCodeService.validateCode(request = request)
+    fun validateCode(request: ValidateCodeRequest) : ValidateCodeResponse {
+        if (validationCodeService.validateCode(request = request)) {
+            val user = userRepository.findByEmail(request.email)
+            return ValidateCodeResponse(
+                userId = user?.id,
+                registrationStep = user?.registrationStep ?: RegistrationStep.START
+            )
+        } else {
+            throw ValidateCodeException(
+                message = GeneralError.EV003.message,
+                internalCode = GeneralError.EV003.code
+            )
+        }
     }
 
     fun createUser(request: CreateUserRequest) {
         userRepository.save(request.toEntity())
+    }
+
+    fun isEmailAvailable(email: String): Boolean {
+        return userRepository.findByEmail(email) == null
     }
 }

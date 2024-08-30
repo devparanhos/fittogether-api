@@ -15,8 +15,8 @@ class EmailService(
     fun sendValidationCode(to: String, code: Int) {
         val message = SimpleMailMessage().apply {
             setTo(to)
-            setSubject("Código de validação - Fit Together")
-            setText(code.toString())
+            subject = "Código de validação - Fit Together"
+            text = code.toString()
         }
 
         mailSender.send(message)

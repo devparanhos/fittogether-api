@@ -5,6 +5,7 @@ import br.com.fitogether.api.core.exception.custom.ValidateCodeException
 import br.com.fitogether.api.data.entity.code.ValidationCodeEntity
 import br.com.fitogether.api.data.repository.code.ValidationCodeRepository
 import br.com.fitogether.api.domain.model.request.user.ValidateCodeRequest
+import br.com.fitogether.api.domain.model.response.ValidateCodeResponse
 import br.com.fitogether.api.domain.service.email.EmailService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -36,7 +37,7 @@ class ValidationCodeService(
         }
     }
 
-    fun validateCode(request: ValidateCodeRequest) {
+    fun validateCode(request: ValidateCodeRequest) : Boolean {
         val entity = validationCodeRepository.findByEmail(request.email)
 
         when {
@@ -61,10 +62,12 @@ class ValidationCodeService(
                 )
             }
 
-            else -> {
-
-            }
+            else -> return true
         }
+    }
+
+    fun isEmailValidated(email: String) : Boolean {
+        return validationCodeRepository.findByEmail(email = email)?.validated ?: false
     }
 
     private fun generateRandomCode(): Int {

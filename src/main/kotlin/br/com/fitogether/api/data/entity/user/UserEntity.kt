@@ -1,5 +1,6 @@
 package br.com.fitogether.api.data.entity.user
 
+import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
 
 import jakarta.persistence.*
@@ -29,5 +30,10 @@ data class UserEntity(
     var password: String = "",
 
     @Column(name = "registration_status", nullable = false)
-    var registrationStatus: UserRegistrationStatus = UserRegistrationStatus.IN_REGISTRATION
+    @Enumerated(EnumType.STRING)
+    var registrationStatus: UserRegistrationStatus = UserRegistrationStatus.IN_REGISTRATION,
+
+    @Column(name = "registration_step", nullable = false)
+    @Enumerated(EnumType.STRING)
+    var registrationStep: RegistrationStep = RegistrationStep.GENDER
 )
