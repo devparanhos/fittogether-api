@@ -15,12 +15,14 @@ import br.com.fitogether.api.domain.model.response.ValidateEmailResponse
 import br.com.fitogether.api.domain.service.code.ValidationCodeService
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class UserService(
     @Autowired private val userRepository: UserRepository,
-    @Autowired private val validationCodeService: ValidationCodeService
+    @Autowired private val validationCodeService: ValidationCodeService,
+    @Autowired private val bCryptPasswordEncoder: BCryptPasswordEncoder,
 ) {
     fun validateEmail(request: ValidateEmailRequest) : ValidateEmailResponse  {
         try {
@@ -52,7 +54,11 @@ class UserService(
     }
 
     fun createUser(request: CreateUserRequest) {
-        userRepository.save(request.toEntity())
+        userRepository.save(
+            request.copy(
+                password = bCryptPasswordEncoder.encode(request.password)
+            ).toEntity()
+        )
     }
 
     fun isEmailAvailable(email: String): Boolean {

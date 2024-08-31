@@ -5,7 +5,6 @@ import br.com.fitogether.api.core.exception.custom.ValidateCodeException
 import br.com.fitogether.api.data.entity.code.ValidationCodeEntity
 import br.com.fitogether.api.data.repository.code.ValidationCodeRepository
 import br.com.fitogether.api.domain.model.request.user.ValidateCodeRequest
-import br.com.fitogether.api.domain.model.response.ValidateCodeResponse
 import br.com.fitogether.api.domain.service.email.EmailService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -62,7 +61,10 @@ class ValidationCodeService(
                 )
             }
 
-            else -> return true
+            else -> {
+                validationCodeRepository.save(entity.copy(validated = true))
+                return true
+            }
         }
     }
 

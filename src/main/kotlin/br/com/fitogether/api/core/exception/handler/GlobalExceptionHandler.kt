@@ -4,6 +4,7 @@ import br.com.fitogether.api.core.enums.GeneralError
 import br.com.fitogether.api.core.error.field.FieldError
 import br.com.fitogether.api.core.exception.custom.ValidateCodeException
 import br.com.fitogether.api.core.exception.global.GlobalException
+import br.com.fitogether.api.core.extension.transformToFieldString
 import jakarta.mail.MessagingException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -23,7 +24,9 @@ class GlobalExceptionHandler {
                 statusCode = HttpStatus.UNPROCESSABLE_ENTITY.value(),
                 message = GeneralError.EV001.message,
                 internalCode = GeneralError.EV001.code,
-                errors = exception.bindingResult.fieldErrors.map { FieldError(field = it.field, message = it.defaultMessage) }
+                errors = exception.bindingResult.fieldErrors.map {
+                    FieldError(field = it.field.transformToFieldString(), message = it.defaultMessage)
+                }
             ),
             HttpStatus.UNPROCESSABLE_ENTITY
         )
