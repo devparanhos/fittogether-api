@@ -21,6 +21,8 @@ data class CreateUserRequest(
     @field:Length(min = 3, message = "O nome deve conter pelo 3 caracteres")
     val name: String,
 
+    @field:NotBlank(message = "O celular é obrigatório")
+    @field:Length(min = 11, max = 11, message = "O número digitado é inválido")
     val cellphone: String,
 
     @JsonAlias("birth_date")
