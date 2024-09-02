@@ -2,8 +2,11 @@ package br.com.fitogether.api.data.entity.user
 
 import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
+import br.com.fitogether.api.data.entity.role.RoleEntity
 
 import jakarta.persistence.*
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
 
 import java.util.Date
 
@@ -17,6 +20,10 @@ data class UserEntity(
     @Column(name = "email", nullable = false, unique = true)
     var email: String = "",
 
+    @Column(name = "username", nullable = false, unique = true)
+    @get:JvmName("getUsernameInternal")
+    var username: String = "",
+
     @Column(name = "name", nullable = false)
     var name: String = "",
 
@@ -27,6 +34,7 @@ data class UserEntity(
     var birthDate: Date = Date(),
 
     @Column(name = "password", nullable = false)
+    @get:JvmName("getPasswordInternal")
     var password: String = "",
 
     @Column(name = "registration_status", nullable = false)
@@ -35,5 +43,26 @@ data class UserEntity(
 
     @Column(name = "registration_step", nullable = false)
     @Enumerated(EnumType.STRING)
-    var registrationStep: RegistrationStep = RegistrationStep.GENDER
-)
+    var registrationStep: RegistrationStep = RegistrationStep.GENDER,
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_role",
+        joinColumns = [JoinColumn(name = "user_id")],
+        inverseJoinColumns = [JoinColumn(name = "role_id")]
+    )
+    var roles: MutableSet<RoleEntity> = mutableSetOf()
+
+) : UserDetails {
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
+        return roles
+    }
+
+    override fun getPassword(): String {
+        return password
+    }
+
+    override fun getUsername(): String {
+        return username
+    }
+}

@@ -8,7 +8,6 @@ import br.com.fitogether.api.domain.validation.password.annotation.PasswordMatch
 import br.com.fitogether.api.domain.validation.password.annotation.PasswordValid
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
@@ -21,6 +20,8 @@ data class CreateUserRequest(
     @EmailAvailable
     @EmailValidated
     val email: String,
+
+    var username: String,
 
     @field:NotBlank(message = "O nome é obrigatório")
     @field:Length(min = 3, message = "O nome deve conter pelo 3 caracteres")

@@ -1,5 +1,6 @@
 package br.com.fitogether.api.domain.service.user
 
+import br.com.fitogether.api.config.security.SecurityConfig
 import br.com.fitogether.api.core.enums.GeneralError
 import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
@@ -10,11 +11,13 @@ import br.com.fitogether.api.data.repository.user.UserRepository
 import br.com.fitogether.api.domain.model.request.user.CreateUserRequest
 import br.com.fitogether.api.domain.model.request.user.ValidateCodeRequest
 import br.com.fitogether.api.domain.model.request.user.ValidateEmailRequest
+import br.com.fitogether.api.domain.model.response.UserResponse
 import br.com.fitogether.api.domain.model.response.ValidateCodeResponse
 import br.com.fitogether.api.domain.model.response.ValidateEmailResponse
 import br.com.fitogether.api.domain.service.code.ValidationCodeService
-
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -23,7 +26,8 @@ class UserService(
     @Autowired private val userRepository: UserRepository,
     @Autowired private val validationCodeService: ValidationCodeService,
     @Autowired private val bCryptPasswordEncoder: BCryptPasswordEncoder,
-) {
+    private val securityConfig: SecurityConfig
+) : UserDetailsService {
     fun validateEmail(request: ValidateEmailRequest) : ValidateEmailResponse  {
         try {
             val user = userRepository.findByEmail(request.email)
@@ -53,15 +57,21 @@ class UserService(
         }
     }
 
-    fun createUser(request: CreateUserRequest) {
-        userRepository.save(
+    fun createUser(request: CreateUserRequest) : UserResponse {
+        val user = userRepository.save(
             request.copy(
                 password = bCryptPasswordEncoder.encode(request.password)
             ).toEntity()
         )
+
+        return UserResponse(accessToken = securityConfig.generateToken())
     }
 
     fun isEmailAvailable(email: String): Boolean {
         return userRepository.findByEmail(email) == null
+    }
+
+    override fun loadUserByUsername(username: String?): UserDetails {
+        return userRepository.findByUsername(username = username) ?: throw Exception()
     }
 }

@@ -1,14 +1,75 @@
 package br.com.fitogether.api.config.security
 
+import com.nimbusds.jose.jwk.JWKSet
+import com.nimbusds.jose.jwk.RSAKey
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet
+import com.nimbusds.jose.proc.SecurityContext
+import com.nimbusds.jwt.JWTClaimsSet
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.annotation.web.WebSecurityConfigurer
+import org.springframework.http.HttpMethod
+import org.springframework.security.config.Customizer
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.oauth2.jwt.*
+import org.springframework.security.web.SecurityFilterChain
+import java.security.interfaces.RSAPrivateKey
+import java.security.interfaces.RSAPublicKey
+import java.time.Instant
 
 @Configuration
+@EnableWebSecurity
 class SecurityConfig {
+
+    @Value("\${security.jwt.public-key}")
+    private lateinit var publicKey : RSAPublicKey
+
+    @Value("\${security.jwt.private-key}")
+    private lateinit var privateKey : RSAPrivateKey
+
+    private val publicPostEndpoints = arrayOf("/users", "users/validate-email", "/users/validate-code")
 
     @Bean
     fun bCryptPasswordEncoder(): BCryptPasswordEncoder = BCryptPasswordEncoder()
 
+    @Bean
+    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http.csrf{ it.disable() }
+            .authorizeHttpRequests{ it
+                .requestMatchers(HttpMethod.POST, *publicPostEndpoints).permitAll()
+                .anyRequest().authenticated()
+            }
+            .oauth2ResourceServer { it.jwt(Customizer.withDefaults()) }
+            .sessionManagement{ it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+
+        return http.build()
+    }
+
+    @Bean
+    fun jwtEncoder() : JwtEncoder {
+        val jwk = RSAKey.Builder(publicKey).privateKey(privateKey).build()
+        val jwks = ImmutableJWKSet<SecurityContext>(JWKSet(jwk))
+
+        return NimbusJwtEncoder(jwks)
+    }
+
+    @Bean
+    fun jwtDecoder(): JwtDecoder {
+        return NimbusJwtDecoder.withPublicKey(publicKey).build()
+    }
+
+    fun generateToken() : String{
+        val claims = JwtClaimsSet.builder()
+            .issuer("fittogther")
+            .subject("1223")
+            .issuedAt(Instant.now())
+            .expiresAt(Instant.now().plusSeconds(3600))
+            .claim("ROLE_USER", "CLAIM")
+            .build()
+
+        return jwtEncoder().encode(JwtEncoderParameters.from(claims)).tokenValue
+    }
 }
