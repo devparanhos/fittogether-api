@@ -5,4 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class UserResponse(
     @field:JsonProperty("access_token")
     val accessToken: String,
+
+    @field:JsonProperty("user_id")
+    val userId: Long,
 )

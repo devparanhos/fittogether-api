@@ -2,8 +2,6 @@ package br.com.fitogether.api.data.entity.user
 
 import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
-import br.com.fitogether.api.data.entity.role.RoleEntity
-
 import jakarta.persistence.*
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -45,17 +43,9 @@ data class UserEntity(
     @Enumerated(EnumType.STRING)
     var registrationStep: RegistrationStep = RegistrationStep.GENDER,
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "user_role",
-        joinColumns = [JoinColumn(name = "user_id")],
-        inverseJoinColumns = [JoinColumn(name = "role_id")]
-    )
-    var roles: MutableSet<RoleEntity> = mutableSetOf()
-
 ) : UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-        return roles
+        return mutableSetOf()
     }
 
     override fun getPassword(): String {

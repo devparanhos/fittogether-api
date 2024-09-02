@@ -1,5 +1,6 @@
 package br.com.fitogether.api.controller.user
 
+import br.com.fitogether.api.domain.model.request.authentication.LoginRequest
 import br.com.fitogether.api.domain.model.request.user.CreateUserRequest
 import br.com.fitogether.api.domain.model.request.user.ValidateCodeRequest
 import br.com.fitogether.api.domain.model.response.ValidateEmailResponse
@@ -10,13 +11,12 @@ import br.com.fitogether.api.domain.service.user.UserService
 
 import jakarta.validation.Valid
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("users")
 class UserController(
-    @Autowired private val userService: UserService
+    private val userService: UserService
 ) {
 
     @PostMapping(value = ["validate-email"])
@@ -34,5 +34,9 @@ class UserController(
     @PostMapping
     fun create(@RequestBody @Valid request: CreateUserRequest) : UserResponse {
         return userService.createUser(request = request)
+    }
+
+    fun login(@RequestBody login: LoginRequest) : UserResponse {
+
     }
 }
