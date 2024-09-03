@@ -1,5 +1,6 @@
 package br.com.fitogether.api.config.security
 
+import br.com.fitogether.api.config.filter.JwtAuthenticationFilter
 import br.com.fitogether.api.data.entity.user.UserEntity
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
@@ -18,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.oauth2.jwt.*
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 import java.time.Instant
@@ -32,20 +34,20 @@ class SecurityConfig {
     @Value("\${security.jwt.private-key}")
     private lateinit var privateKey : RSAPrivateKey
 
-    private val publicPostEndpoints = arrayOf("/users", "users/validate-email", "/users/validate-code")
+    private val publicPostEndpoints = arrayOf("/users", "users/validate-email", "/users/validate-code", "users/login")
 
     @Bean
     fun bCryptPasswordEncoder(): BCryptPasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+    fun securityFilterChain(http: HttpSecurity) : SecurityFilterChain {
         http.csrf{ it.disable() }
             .authorizeHttpRequests{ it
                 .requestMatchers(HttpMethod.POST, *publicPostEndpoints).permitAll()
                 .anyRequest().authenticated()
             }
-            .oauth2ResourceServer { it.jwt(Customizer.withDefaults()) }
             .sessionManagement{ it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            .addFilterBefore(JwtAuthenticationFilter(jwtDecoder = jwtDecoder()), UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
     }
