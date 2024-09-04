@@ -1,4 +1,4 @@
-package br.com.fitogether.api.domain.model.request.user
+package br.com.fitogether.api.domain.dto.request.user
 
 import br.com.fitogether.api.domain.validation.date.annotation.AgePermitted
 import br.com.fitogether.api.domain.validation.date.annotation.BirthdateValid

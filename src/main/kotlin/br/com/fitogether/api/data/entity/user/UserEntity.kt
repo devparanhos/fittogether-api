@@ -2,9 +2,8 @@ package br.com.fitogether.api.data.entity.user
 
 import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
+
 import jakarta.persistence.*
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.userdetails.UserDetails
 
 import java.util.Date
 
@@ -43,16 +42,6 @@ data class UserEntity(
     @Enumerated(EnumType.STRING)
     var registrationStep: RegistrationStep = RegistrationStep.GENDER,
 
-) : UserDetails {
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-        return mutableSetOf()
-    }
-
-    override fun getPassword(): String {
-        return password
-    }
-
-    override fun getUsername(): String {
-        return username
-    }
-}
+    @Column(name="access_token")
+    var accessToken: String? = null,
+)

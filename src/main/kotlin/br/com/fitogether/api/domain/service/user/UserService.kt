@@ -7,20 +7,22 @@ import br.com.fitogether.api.core.enums.UserRegistrationStatus
 import br.com.fitogether.api.core.exception.custom.ValidateCodeException
 import br.com.fitogether.api.data.entity.user.UserEntity
 import br.com.fitogether.api.data.mapper.user.toEntity
+import br.com.fitogether.api.data.mapper.user.toUserResponse
 import br.com.fitogether.api.data.mapper.user.toValidateEmailResponse
 import br.com.fitogether.api.data.repository.user.UserRepository
-import br.com.fitogether.api.domain.model.request.authentication.LoginRequest
-import br.com.fitogether.api.domain.model.request.user.CreateUserRequest
-import br.com.fitogether.api.domain.model.request.user.ValidateCodeRequest
-import br.com.fitogether.api.domain.model.request.user.ValidateEmailRequest
-import br.com.fitogether.api.domain.model.response.UserResponse
-import br.com.fitogether.api.domain.model.response.ValidateCodeResponse
-import br.com.fitogether.api.domain.model.response.ValidateEmailResponse
+import br.com.fitogether.api.domain.dto.request.authentication.LoginRequest
+import br.com.fitogether.api.domain.dto.request.user.CreateUserRequest
+import br.com.fitogether.api.domain.dto.request.user.ValidateCodeRequest
+import br.com.fitogether.api.domain.dto.request.user.ValidateEmailRequest
+import br.com.fitogether.api.domain.dto.response.UserResponse
+import br.com.fitogether.api.domain.dto.response.ValidateCodeResponse
+import br.com.fitogether.api.domain.dto.response.ValidateEmailResponse
 import br.com.fitogether.api.domain.service.code.ValidationCodeService
-import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.AuthenticationException
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import javax.security.auth.login.LoginException
 
 @Service
 class UserService(
@@ -65,10 +67,15 @@ class UserService(
             ).toEntity()
         )
 
-        return UserResponse(
-            accessToken = securityConfig.generateToken(user = user),
-            userId = user.id ?: 0
-        )
+        return setUserAccessToken(userEntity = user)
+    }
+
+    fun setUserAccessToken(userEntity: UserEntity) : UserResponse {
+        return userRepository.save(
+            userEntity.copy(
+                accessToken = securityConfig.generateToken(user = userEntity)
+            )
+        ).toUserResponse()
     }
 
     fun isEmailAvailable(email: String): Boolean {
@@ -78,11 +85,14 @@ class UserService(
     fun authenticate(login: LoginRequest) : UserResponse {
         userRepository.findByEmail(email = login.email)?.let {
             if (bCryptPasswordEncoder.matches(login.password, it.password)) {
-                val token = securityConfig.generateToken(it)
-                return UserResponse(accessToken = token, userId = it.id!!)
+                return setUserAccessToken(userEntity = it)
             } else {
-                throw Exception()
+                throw LoginException(GeneralError.EAUTH001.message)
             }
-        } ?:throw Exception()
+        } ?: throw LoginException(GeneralError.EAUTH001.message)
+    }
+
+    fun isValidToken(token: String) : Boolean {
+        return userRepository.findByAccessToken(accessToken = token) != null
     }
 }

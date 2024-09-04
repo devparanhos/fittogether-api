@@ -1,4 +1,4 @@
-package br.com.fitogether.api.domain.model.request.user
+package br.com.fitogether.api.domain.dto.request.user
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotEmpty

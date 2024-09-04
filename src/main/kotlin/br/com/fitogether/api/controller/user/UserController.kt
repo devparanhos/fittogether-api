@@ -1,17 +1,15 @@
 package br.com.fitogether.api.controller.user
 
-import br.com.fitogether.api.config.security.SecurityConfig
-import br.com.fitogether.api.domain.model.request.authentication.LoginRequest
-import br.com.fitogether.api.domain.model.request.user.CreateUserRequest
-import br.com.fitogether.api.domain.model.request.user.ValidateCodeRequest
-import br.com.fitogether.api.domain.model.response.ValidateEmailResponse
-import br.com.fitogether.api.domain.model.request.user.ValidateEmailRequest
-import br.com.fitogether.api.domain.model.response.UserResponse
-import br.com.fitogether.api.domain.model.response.ValidateCodeResponse
+import br.com.fitogether.api.domain.dto.request.authentication.LoginRequest
+import br.com.fitogether.api.domain.dto.request.user.CreateUserRequest
+import br.com.fitogether.api.domain.dto.request.user.ValidateCodeRequest
+import br.com.fitogether.api.domain.dto.response.ValidateEmailResponse
+import br.com.fitogether.api.domain.dto.request.user.ValidateEmailRequest
+import br.com.fitogether.api.domain.dto.response.UserResponse
+import br.com.fitogether.api.domain.dto.response.ValidateCodeResponse
 import br.com.fitogether.api.domain.service.user.UserService
 
 import jakarta.validation.Valid
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 import org.springframework.web.bind.annotation.*
 
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("users")
 class UserController(
     private val userService: UserService,
-    private val encoder: BCryptPasswordEncoder
 ) {
 
     @PostMapping(value = ["validate-email"])
@@ -46,6 +43,6 @@ class UserController(
 
     @GetMapping
     fun teste() : String{
-        return "teste"
+       return "teste"
     }
 }

@@ -1,6 +1,6 @@
 package br.com.fitogether.api.domain.validation.password.validator
 
-import br.com.fitogether.api.domain.model.request.user.CreateUserRequest
+import br.com.fitogether.api.domain.dto.request.user.CreateUserRequest
 import br.com.fitogether.api.domain.validation.password.annotation.PasswordMatches
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext

@@ -1,8 +1,11 @@
 package br.com.fitogether.api.config.filter
 
+import br.com.fitogether.api.core.enums.GeneralError
+import br.com.fitogether.api.domain.service.user.UserService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
 import org.springframework.security.core.context.SecurityContextHolder
@@ -13,7 +16,8 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Configuration
 class JwtAuthenticationFilter(
-    private val jwtDecoder: JwtDecoder
+    private val jwtDecoder: JwtDecoder,
+    private val userService: UserService
 ) : OncePerRequestFilter() {
 
     override fun doFilterInternal(
@@ -26,11 +30,15 @@ class JwtAuthenticationFilter(
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             val token = authHeader.substring(7)
             try {
-                val jwt = jwtDecoder.decode(token)
-                val authentication = JwtAuthenticationToken(jwt, null)
-                SecurityContextHolder.getContext().authentication = authentication
+                if (userService.isValidToken(token = token)) {
+                    val jwt = jwtDecoder.decode(token)
+                    val authentication = JwtAuthenticationToken(jwt, null)
+                    SecurityContextHolder.getContext().authentication = authentication
+                } else {
+                    throw JwtException(GeneralError.EAUTH002.message)
+                }
             } catch (e: JwtException) {
-                throw JwtException("Invalid JWT token")
+                throw JwtException(GeneralError.EAUTH002.message)
             }
         }
         filterChain.doFilter(request, response)

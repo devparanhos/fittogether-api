@@ -1,4 +1,4 @@
-package br.com.fitogether.api.domain.model.response
+package br.com.fitogether.api.domain.dto.response
 
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
 import com.fasterxml.jackson.annotation.JsonProperty

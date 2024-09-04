@@ -1,4 +1,4 @@
-package br.com.fitogether.api.domain.model.request.authentication
+package br.com.fitogether.api.domain.dto.request.authentication
 
 data class LoginRequest(
     val email: String,

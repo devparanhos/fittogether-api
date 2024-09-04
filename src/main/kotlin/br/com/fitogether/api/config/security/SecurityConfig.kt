@@ -2,6 +2,7 @@ package br.com.fitogether.api.config.security
 
 import br.com.fitogether.api.config.filter.JwtAuthenticationFilter
 import br.com.fitogether.api.data.entity.user.UserEntity
+import br.com.fitogether.api.domain.service.user.UserService
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet
@@ -47,7 +48,10 @@ class SecurityConfig {
                 .anyRequest().authenticated()
             }
             .sessionManagement{ it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .addFilterBefore(JwtAuthenticationFilter(jwtDecoder = jwtDecoder()), UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(
+                JwtAuthenticationFilter(jwtDecoder = jwtDecoder()),
+                UsernamePasswordAuthenticationFilter::class.java
+            )
 
         return http.build()
     }
