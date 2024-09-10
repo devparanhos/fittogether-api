@@ -16,5 +16,5 @@ enum class GeneralError(val message: String, val code: String) {
 
     //Erros de autenticação
     EAUTH001(message = "Não foi possível fazer login. Credenciais inválidas", code = "EAUTH-001"),
-    EAUTH002(message = "Acesso negado, refaça seu login", code = "EAUTH-002"),
+    EAUTH002(message = "Acesso negado, a autenticação falhou", code = "EAUTH-002"),
 }

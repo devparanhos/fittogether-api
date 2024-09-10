@@ -2,8 +2,12 @@ package br.com.fitogether.api.data.entity.user
 
 import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
+import br.com.fitogether.api.data.entity.gender.GenderEntity
+import br.com.fitogether.api.data.entity.goal.GoalEntity
 
 import jakarta.persistence.*
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
 
 import java.util.Date
 
@@ -44,4 +48,24 @@ data class UserEntity(
 
     @Column(name="access_token")
     var accessToken: String? = null,
-)
+
+    @ManyToOne
+    @JoinColumn(name = "gender_id")
+    var gender: GenderEntity? = null,
+
+    @ManyToMany(mappedBy = "users")
+    var goals: Set<GoalEntity> = setOf()
+) : UserDetails {
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
+        return mutableListOf()
+    }
+
+    override fun getPassword(): String {
+        return this.password
+    }
+
+    override fun getUsername(): String {
+        return this.username
+    }
+
+}

@@ -8,5 +8,8 @@ CREATE TABLE IF NOT EXISTS user (
     password VARCHAR(255) NOT NULL,
     registration_status VARCHAR(50) NOT NULL,
     registration_step VARCHAR(50) NOT NULL,
-    access_token TEXT
+    access_token TEXT,
+    gender_id BIGINT,
+    CONSTRAINT fk_gender
+        FOREIGN KEY (gender_id) REFERENCES gender(id)
 );

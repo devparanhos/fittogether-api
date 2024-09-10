@@ -4,11 +4,8 @@ import br.com.fitogether.api.core.enums.RegistrationStep
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class UserResponse(
-    @field:JsonProperty("access_token")
-    val accessToken: String?,
-
-    @field:JsonProperty("user_id")
-    val userId: Long?,
+    @field:JsonProperty("id")
+    val id: Long?,
 
     @field:JsonProperty("email")
     val email: String,
@@ -20,5 +17,8 @@ data class UserResponse(
     val registrationStep: RegistrationStep,
 
     @field:JsonProperty("username")
-    val username: String
+    val username: String,
+
+    @field:JsonProperty("gender")
+    val gender: String?
 )

@@ -5,7 +5,7 @@ import br.com.fitogether.api.domain.dto.request.user.CreateUserRequest
 import br.com.fitogether.api.domain.dto.request.user.ValidateCodeRequest
 import br.com.fitogether.api.domain.dto.response.ValidateEmailResponse
 import br.com.fitogether.api.domain.dto.request.user.ValidateEmailRequest
-import br.com.fitogether.api.domain.dto.response.UserResponse
+import br.com.fitogether.api.domain.dto.response.AuthenticationResponse
 import br.com.fitogether.api.domain.dto.response.ValidateCodeResponse
 import br.com.fitogether.api.domain.service.user.UserService
 
@@ -32,17 +32,12 @@ class UserController(
     }
 
     @PostMapping
-    fun create(@RequestBody @Valid request: CreateUserRequest) : UserResponse {
+    fun create(@RequestBody @Valid request: CreateUserRequest) : AuthenticationResponse {
         return userService.createUser(request = request)
     }
 
     @PostMapping(value = ["login"])
-    fun login(@RequestBody login: LoginRequest) : UserResponse {
+    fun login(@RequestBody login: LoginRequest) : AuthenticationResponse {
         return userService.authenticate(login = login)
-    }
-
-    @GetMapping
-    fun teste() : String{
-       return "teste"
     }
 }
