@@ -19,19 +19,6 @@ import javax.security.auth.login.LoginException
 @ControllerAdvice
 class GlobalExceptionHandler {
 
-    @ExceptionHandler(AccessDeniedException::class)
-    fun handleAccessDeniedException(exception: AccessDeniedException, request: WebRequest) : ResponseEntity<GlobalException> {
-        return ResponseEntity(
-            GlobalException(
-                statusCode = HttpStatus.UNPROCESSABLE_ENTITY.value(),
-                message = GeneralError.EV001.message,
-                internalCode = GeneralError.EV001.code,
-                errors = null
-            ),
-            HttpStatus.INTERNAL_SERVER_ERROR
-        )
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNoValidException(exception: MethodArgumentNotValidException, request: WebRequest): ResponseEntity<GlobalException> {
         return ResponseEntity(

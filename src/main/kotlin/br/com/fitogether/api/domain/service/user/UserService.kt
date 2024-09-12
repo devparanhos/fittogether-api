@@ -6,8 +6,10 @@ import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
 import br.com.fitogether.api.core.exception.custom.ValidateCodeException
 import br.com.fitogether.api.data.entity.user.UserEntity
+import br.com.fitogether.api.data.mapper.goal.toEntity
 import br.com.fitogether.api.data.mapper.user.*
 import br.com.fitogether.api.data.repository.gender.GenderRepository
+import br.com.fitogether.api.data.repository.goal.GoalRepository
 import br.com.fitogether.api.data.repository.user.UserRepository
 import br.com.fitogether.api.domain.dto.request.authentication.LoginRequest
 import br.com.fitogether.api.domain.dto.request.registration.GenderRequest
@@ -18,16 +20,20 @@ import br.com.fitogether.api.domain.dto.response.AuthenticationResponse
 import br.com.fitogether.api.domain.dto.response.UserResponse
 import br.com.fitogether.api.domain.dto.response.ValidateCodeResponse
 import br.com.fitogether.api.domain.dto.response.ValidateEmailResponse
+import br.com.fitogether.api.domain.model.goal.Goal
 import br.com.fitogether.api.domain.service.code.ValidationCodeService
+import jakarta.transaction.Transactional
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import javax.security.auth.login.LoginException
 
 @Service
+@Transactional
 class UserService(
     private val userRepository: UserRepository,
     private val genderRepository: GenderRepository,
+    private val goalRepository: GoalRepository,
     private val validationCodeService: ValidationCodeService,
     private val bCryptPasswordEncoder: BCryptPasswordEncoder,
     private val securityConfig: SecurityConfig
@@ -103,5 +109,14 @@ class UserService(
         return userRepository.save(
             user.copy(gender = gender, registrationStep = RegistrationStep.GOALS)
         ).toModel().toUserResponse()
+    }
+
+    fun setUserGoals(userId: Long, goals: List<Goal>) : UserResponse {
+        val user = userRepository.findById(userId).orElseThrow()
+        val goalsEntity = goalRepository.findAllById(goals.map { it.id }).toMutableSet()
+
+        user.goals.addAll(goalsEntity)
+
+        return userRepository.save(user).toModel().toUserResponse()
     }
 }

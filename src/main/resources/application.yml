@@ -11,7 +11,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: false
+    show-sql: true
   flyway:
     url: jdbc:mysql://localhost:3306/fittogether
     user: root

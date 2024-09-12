@@ -15,7 +15,7 @@ open class BaseController {
             } else {
                 throw UsernameNotFoundException("User not found")
             }
-        }catch (e:Exception){
+        } catch (e:Exception) {
             throw UsernameNotFoundException("User not found")
         }
     }

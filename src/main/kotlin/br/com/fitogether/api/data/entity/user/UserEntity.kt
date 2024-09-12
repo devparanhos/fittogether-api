@@ -2,10 +2,12 @@ package br.com.fitogether.api.data.entity.user
 
 import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
+import br.com.fitogether.api.data.entity.exercise.ExerciseEntity
 import br.com.fitogether.api.data.entity.gender.GenderEntity
 import br.com.fitogether.api.data.entity.goal.GoalEntity
 
 import jakarta.persistence.*
+import org.hibernate.annotations.Fetch
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
@@ -16,45 +18,58 @@ data class UserEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
+    val id: Long? = null,
 
     @Column(name = "email", nullable = false, unique = true)
-    var email: String = "",
+    val email: String = "",
 
     @Column(name = "username", nullable = false, unique = true)
     @get:JvmName("getUsernameInternal")
-    var username: String = "",
+    val username: String = "",
 
     @Column(name = "name", nullable = false)
-    var name: String = "",
+    val name: String = "",
 
     @Column(name = "cellphone", nullable = false)
-    var cellphone: String = "",
+    val cellphone: String = "",
 
     @Column(name = "birth_date", nullable = false)
-    var birthDate: Date = Date(),
+    val birthDate: Date = Date(),
 
     @Column(name = "password", nullable = false)
     @get:JvmName("getPasswordInternal")
-    var password: String = "",
+    val password: String = "",
 
     @Column(name = "registration_status", nullable = false)
     @Enumerated(EnumType.STRING)
-    var registrationStatus: UserRegistrationStatus = UserRegistrationStatus.IN_REGISTRATION,
+    val registrationStatus: UserRegistrationStatus = UserRegistrationStatus.IN_REGISTRATION,
 
     @Column(name = "registration_step", nullable = false)
     @Enumerated(EnumType.STRING)
-    var registrationStep: RegistrationStep = RegistrationStep.GENDER,
+    val registrationStep: RegistrationStep = RegistrationStep.GENDER,
 
     @Column(name="access_token")
-    var accessToken: String? = null,
+    val accessToken: String? = null,
 
     @ManyToOne
     @JoinColumn(name = "gender_id")
-    var gender: GenderEntity? = null,
+    val gender: GenderEntity? = null,
 
-    @ManyToMany(mappedBy = "users")
-    var goals: Set<GoalEntity> = setOf()
+    @ManyToMany
+    @JoinTable(
+        name = "user_goals",
+        joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "goal_id", referencedColumnName = "id")]
+    )
+    val goals: MutableSet<GoalEntity> = mutableSetOf(),
+
+    @ManyToMany
+    @JoinTable(
+        name = "user_exercises",
+        joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "exercise_id", referencedColumnName = "id")]
+    )
+    val exercises: MutableSet<ExerciseEntity> = mutableSetOf()
 ) : UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return mutableListOf()
@@ -67,5 +82,4 @@ data class UserEntity(
     override fun getUsername(): String {
         return this.username
     }
-
 }
