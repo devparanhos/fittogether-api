@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.AuthenticationEntryPoint
 
@@ -17,17 +18,22 @@ class CustomAuthenticationEntryPoint : AuthenticationEntryPoint {
         response: HttpServletResponse,
         authException: AuthenticationException?
     ) {
-        response.status = HttpStatus.UNAUTHORIZED.value()
-        response.contentType = "application/json"
-        response.writer.write(
-            ObjectMapper().writeValueAsString(
-                GlobalException(
-                    statusCode = HttpStatus.UNAUTHORIZED.value(),
-                    message = GeneralError.EAUTH002.message,
-                    internalCode = GeneralError.EAUTH002.code,
-                    errors = null
+        when(authException) {
+            is BadCredentialsException -> {
+                response.status = HttpStatus.UNAUTHORIZED.value()
+                response.contentType = "application/json"
+                response.writer.write(
+                    ObjectMapper().writeValueAsString(
+                        GlobalException(
+                            statusCode = HttpStatus.UNAUTHORIZED.value(),
+                            message = GeneralError.EAUTH002.message,
+                            internalCode = GeneralError.EAUTH002.code,
+                            errors = null
+                        )
+                    )
                 )
-            )
-        )
+            }
+        }
+
     }
 }

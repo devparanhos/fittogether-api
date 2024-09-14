@@ -3,6 +3,7 @@ package br.com.fitogether.api.data.mapper.user
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
 import br.com.fitogether.api.core.extension.formatDate
 import br.com.fitogether.api.data.entity.user.UserEntity
+import br.com.fitogether.api.data.mapper.exercise.toModel
 import br.com.fitogether.api.data.mapper.gender.toModel
 import br.com.fitogether.api.data.mapper.goal.toModel
 import br.com.fitogether.api.domain.dto.request.user.CreateUserRequest
@@ -29,7 +30,8 @@ fun UserEntity.toModel() = User(
     username = this.username,
     email = this.email,
     registrationStep = this.registrationStep,
-    goals = this.goals.map { it.toModel() }
+    goals = this.goals.map { it.toModel() },
+    exercises = this.exercises.map { it.toModel() }
 )
 
 fun User.toUserResponse() = UserResponse(
@@ -39,7 +41,8 @@ fun User.toUserResponse() = UserResponse(
     username = this.username,
     registrationStep = this.registrationStep,
     gender = this.gender,
-    goals = this.goals
+    goals = this.goals,
+    exercises = this.exercises
 )
 
 fun CreateUserRequest.toEntity() = UserEntity(

@@ -1,11 +1,14 @@
 package br.com.fitogether.api.controller.registration
 
 import br.com.fitogether.api.controller.base.BaseController
+import br.com.fitogether.api.domain.dto.request.registration.ExerciseRequest
 import br.com.fitogether.api.domain.dto.request.registration.GenderRequest
 import br.com.fitogether.api.domain.dto.request.registration.GoalRequest
-import br.com.fitogether.api.domain.dto.response.screens.registration.GetRegistrationGenderScreenResponse
+import br.com.fitogether.api.domain.dto.response.screens.registration.gender.GetRegistrationGenderScreenResponse
 import br.com.fitogether.api.domain.dto.response.UserResponse
-import br.com.fitogether.api.domain.dto.response.screens.registration.GetRegistrationGoalsScreenResponse
+import br.com.fitogether.api.domain.dto.response.screens.registration.exercise.GetRegistrationExerciseScreenResponse
+import br.com.fitogether.api.domain.dto.response.screens.registration.experience.GetRegistrationExperienceScreenResponse
+import br.com.fitogether.api.domain.dto.response.screens.registration.goal.GetRegistrationGoalsScreenResponse
 import br.com.fitogether.api.domain.service.screen.registration.ScreenRegistrationService
 import br.com.fitogether.api.domain.service.user.UserService
 import jakarta.validation.Valid
@@ -56,6 +59,37 @@ class RegistrationController(
             userId = userId,
             useCase = {
                 userService.setUserGoals(userId = userId, goals = goalsRequest.goals)
+            }
+        )
+    }
+
+    @GetMapping(value = ["/screen/exercises"])
+    fun getExercisesScreen() : GetRegistrationExerciseScreenResponse {
+        return execute(
+            useCase = {
+                screenRegistrationService.buildExercisesScreen()
+            }
+        )
+    }
+
+    @PostMapping(value = ["{userId}/exercises"])
+    fun setExercisesScreen(
+        @PathVariable("userId") userId: Long,
+        @RequestBody exercisesRequest: ExerciseRequest
+    ) : UserResponse {
+        return execute(
+            userId = userId,
+            useCase = {
+                userService.setUserExercises(userId = userId, exercises = exercisesRequest.exercises)
+            }
+        )
+    }
+
+    @GetMapping(value = ["/screen/experiences"])
+    fun getExperiencesScreen() : GetRegistrationExperienceScreenResponse {
+        return execute(
+            useCase = {
+                screenRegistrationService.buildExperienceScreen()
             }
         )
     }

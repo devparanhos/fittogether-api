@@ -8,7 +8,9 @@ import br.com.fitogether.api.core.extension.transformToFieldString
 import jakarta.mail.MessagingException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.oauth2.jwt.JwtException
+import org.springframework.web.ErrorResponse
 import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -18,6 +20,19 @@ import javax.security.auth.login.LoginException
 
 @ControllerAdvice
 class GlobalExceptionHandler {
+
+    @ExceptionHandler(UsernameNotFoundException::class)
+    fun handleUsernameNotFoundException(ex: UsernameNotFoundException): ResponseEntity<GlobalException> {
+        return ResponseEntity(
+            GlobalException(
+                statusCode = HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                message = GeneralError.EV001.message,
+                internalCode = GeneralError.EV001.code,
+                errors = null
+            ),
+            HttpStatus.UNPROCESSABLE_ENTITY
+        )
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNoValidException(exception: MethodArgumentNotValidException, request: WebRequest): ResponseEntity<GlobalException> {

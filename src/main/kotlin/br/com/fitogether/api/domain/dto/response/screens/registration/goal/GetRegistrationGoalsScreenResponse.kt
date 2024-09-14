@@ -1,4 +1,4 @@
-package br.com.fitogether.api.domain.dto.response.screens.registration
+package br.com.fitogether.api.domain.dto.response.screens.registration.goal
 
 import br.com.fitogether.api.domain.model.goal.Goal
 import com.fasterxml.jackson.annotation.JsonProperty

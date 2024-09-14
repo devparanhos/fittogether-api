@@ -52,7 +52,10 @@ class SecurityConfig(
             }
             .sessionManagement{ it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .addFilterBefore(
-                JwtAuthenticationFilter(jwtDecoder = jwtDecoder(), userRepository = userRepository),
+                JwtAuthenticationFilter(
+                    jwtDecoder = jwtDecoder(),
+                    userRepository = userRepository
+                ),
                 UsernamePasswordAuthenticationFilter::class.java
             )
             .exceptionHandling { it.authenticationEntryPoint(CustomAuthenticationEntryPoint()) }

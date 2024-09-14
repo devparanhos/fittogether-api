@@ -6,13 +6,12 @@ import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
 import br.com.fitogether.api.core.exception.custom.ValidateCodeException
 import br.com.fitogether.api.data.entity.user.UserEntity
-import br.com.fitogether.api.data.mapper.goal.toEntity
 import br.com.fitogether.api.data.mapper.user.*
+import br.com.fitogether.api.data.repository.exercise.ExerciseRepository
 import br.com.fitogether.api.data.repository.gender.GenderRepository
 import br.com.fitogether.api.data.repository.goal.GoalRepository
 import br.com.fitogether.api.data.repository.user.UserRepository
 import br.com.fitogether.api.domain.dto.request.authentication.LoginRequest
-import br.com.fitogether.api.domain.dto.request.registration.GenderRequest
 import br.com.fitogether.api.domain.dto.request.user.CreateUserRequest
 import br.com.fitogether.api.domain.dto.request.user.ValidateCodeRequest
 import br.com.fitogether.api.domain.dto.request.user.ValidateEmailRequest
@@ -20,6 +19,7 @@ import br.com.fitogether.api.domain.dto.response.AuthenticationResponse
 import br.com.fitogether.api.domain.dto.response.UserResponse
 import br.com.fitogether.api.domain.dto.response.ValidateCodeResponse
 import br.com.fitogether.api.domain.dto.response.ValidateEmailResponse
+import br.com.fitogether.api.domain.model.exercise.Exercise
 import br.com.fitogether.api.domain.model.goal.Goal
 import br.com.fitogether.api.domain.service.code.ValidationCodeService
 import jakarta.transaction.Transactional
@@ -34,6 +34,7 @@ class UserService(
     private val userRepository: UserRepository,
     private val genderRepository: GenderRepository,
     private val goalRepository: GoalRepository,
+    private val exerciseRepository: ExerciseRepository,
     private val validationCodeService: ValidationCodeService,
     private val bCryptPasswordEncoder: BCryptPasswordEncoder,
     private val securityConfig: SecurityConfig
@@ -116,6 +117,15 @@ class UserService(
         val goalsEntity = goalRepository.findAllById(goals.map { it.id }).toMutableSet()
 
         user.goals.addAll(goalsEntity)
+
+        return userRepository.save(user).toModel().toUserResponse()
+    }
+
+    fun setUserExercises(userId: Long, exercises: List<Exercise>) : UserResponse {
+        val user = userRepository.findById(userId).orElseThrow()
+        val exerciseEntity = exerciseRepository.findAllById(exercises.map { it.id }).toMutableSet()
+
+        user.exercises.addAll(exerciseEntity)
 
         return userRepository.save(user).toModel().toUserResponse()
     }

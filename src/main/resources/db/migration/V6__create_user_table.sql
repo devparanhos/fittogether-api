@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS user (
     registration_step VARCHAR(50) NOT NULL,
     access_token TEXT,
     gender_id BIGINT,
-    CONSTRAINT fk_gender
-        FOREIGN KEY (gender_id) REFERENCES gender(id)
+    experience_id BIGINT,
+    CONSTRAINT fk_gender FOREIGN KEY (gender_id) REFERENCES gender(id),
+    CONSTRAINT fk_experience FOREIGN KEY (experience_id) REFERENCES experience(id)
 );

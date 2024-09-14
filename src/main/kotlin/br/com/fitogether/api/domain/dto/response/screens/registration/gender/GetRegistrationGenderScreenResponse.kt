@@ -1,4 +1,4 @@
-package br.com.fitogether.api.domain.dto.response.screens.registration
+package br.com.fitogether.api.domain.dto.response.screens.registration.gender
 
 import br.com.fitogether.api.domain.model.gender.Gender
 import com.fasterxml.jackson.annotation.JsonProperty

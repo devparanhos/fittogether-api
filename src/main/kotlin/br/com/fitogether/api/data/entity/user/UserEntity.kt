@@ -3,6 +3,7 @@ package br.com.fitogether.api.data.entity.user
 import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
 import br.com.fitogether.api.data.entity.exercise.ExerciseEntity
+import br.com.fitogether.api.data.entity.experience.ExperienceEntity
 import br.com.fitogether.api.data.entity.gender.GenderEntity
 import br.com.fitogether.api.data.entity.goal.GoalEntity
 
@@ -69,7 +70,11 @@ data class UserEntity(
         joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
         inverseJoinColumns = [JoinColumn(name = "exercise_id", referencedColumnName = "id")]
     )
-    val exercises: MutableSet<ExerciseEntity> = mutableSetOf()
+    val exercises: MutableSet<ExerciseEntity> = mutableSetOf(),
+
+    @ManyToOne
+    @JoinColumn(name = "experience_id")
+    val experience: ExperienceEntity? = null,
 ) : UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return mutableListOf()
