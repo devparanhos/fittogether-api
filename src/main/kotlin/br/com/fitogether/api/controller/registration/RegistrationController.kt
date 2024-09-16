@@ -2,6 +2,7 @@ package br.com.fitogether.api.controller.registration
 
 import br.com.fitogether.api.controller.base.BaseController
 import br.com.fitogether.api.domain.dto.request.registration.ExerciseRequest
+import br.com.fitogether.api.domain.dto.request.registration.ExperienceRequest
 import br.com.fitogether.api.domain.dto.request.registration.GenderRequest
 import br.com.fitogether.api.domain.dto.request.registration.GoalRequest
 import br.com.fitogether.api.domain.dto.response.screens.registration.gender.GetRegistrationGenderScreenResponse
@@ -51,7 +52,7 @@ class RegistrationController(
     }
 
     @PostMapping(value = ["{userId}/goals"])
-    fun setGoalsScreen(
+    fun setGoals(
         @PathVariable("userId") userId: Long,
         @RequestBody goalsRequest: GoalRequest
     ) : UserResponse {
@@ -73,7 +74,7 @@ class RegistrationController(
     }
 
     @PostMapping(value = ["{userId}/exercises"])
-    fun setExercisesScreen(
+    fun setExercises(
         @PathVariable("userId") userId: Long,
         @RequestBody exercisesRequest: ExerciseRequest
     ) : UserResponse {
@@ -90,6 +91,19 @@ class RegistrationController(
         return execute(
             useCase = {
                 screenRegistrationService.buildExperienceScreen()
+            }
+        )
+    }
+
+    @PostMapping(value = ["{userId}/experience"])
+    fun setExperience(
+        @PathVariable("userId") userId: Long,
+        @RequestBody experienceRequest: ExperienceRequest
+    ) : UserResponse {
+        return execute(
+            userId = userId,
+            useCase = {
+                userService.setUserExperience(userId = userId, experienceId = experienceRequest.experienceId)
             }
         )
     }

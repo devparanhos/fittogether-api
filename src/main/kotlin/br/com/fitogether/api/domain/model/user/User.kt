@@ -12,5 +12,6 @@ data class User(
     val username: String,
     val gender: String?,
     val goals: List<Goal>,
-    val exercises: List<Exercise>
+    val exercises: List<Exercise>,
+    val experience: String?
 )

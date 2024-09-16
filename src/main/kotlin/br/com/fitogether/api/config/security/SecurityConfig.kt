@@ -1,6 +1,5 @@
 package br.com.fitogether.api.config.security
 
-import br.com.fitogether.api.config.authentication.CustomAuthenticationEntryPoint
 import br.com.fitogether.api.config.filter.JwtAuthenticationFilter
 import br.com.fitogether.api.data.entity.user.UserEntity
 import br.com.fitogether.api.data.repository.user.UserRepository
@@ -58,8 +57,6 @@ class SecurityConfig(
                 ),
                 UsernamePasswordAuthenticationFilter::class.java
             )
-            .exceptionHandling { it.authenticationEntryPoint(CustomAuthenticationEntryPoint()) }
-
         return http.build()
     }
 

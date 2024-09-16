@@ -8,6 +8,7 @@ import br.com.fitogether.api.core.exception.custom.ValidateCodeException
 import br.com.fitogether.api.data.entity.user.UserEntity
 import br.com.fitogether.api.data.mapper.user.*
 import br.com.fitogether.api.data.repository.exercise.ExerciseRepository
+import br.com.fitogether.api.data.repository.experience.ExperienceRepository
 import br.com.fitogether.api.data.repository.gender.GenderRepository
 import br.com.fitogether.api.data.repository.goal.GoalRepository
 import br.com.fitogether.api.data.repository.user.UserRepository
@@ -35,6 +36,7 @@ class UserService(
     private val genderRepository: GenderRepository,
     private val goalRepository: GoalRepository,
     private val exerciseRepository: ExerciseRepository,
+    private val experienceRepository: ExperienceRepository,
     private val validationCodeService: ValidationCodeService,
     private val bCryptPasswordEncoder: BCryptPasswordEncoder,
     private val securityConfig: SecurityConfig
@@ -128,5 +130,13 @@ class UserService(
         user.exercises.addAll(exerciseEntity)
 
         return userRepository.save(user).toModel().toUserResponse()
+    }
+
+
+    fun setUserExperience(userId: Long, experienceId: Long) : UserResponse {
+        val user = userRepository.findById(userId).orElseThrow()
+        val experienceEntity = experienceRepository.findById(experienceId).orElseThrow()
+
+        return userRepository.save(user.copy(experience = experienceEntity)).toModel().toUserResponse()
     }
 }

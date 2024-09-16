@@ -28,5 +28,8 @@ data class UserResponse(
     val goals: List<Goal>,
 
     @field:JsonProperty("exercises")
-    val exercises: List<Exercise>
+    val exercises: List<Exercise>,
+
+    @field:JsonProperty("experience")
+    val experience: String?
 )
