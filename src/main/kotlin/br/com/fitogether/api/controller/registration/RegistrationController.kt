@@ -10,6 +10,7 @@ import br.com.fitogether.api.domain.dto.response.UserResponse
 import br.com.fitogether.api.domain.dto.response.screens.registration.exercise.GetRegistrationExerciseScreenResponse
 import br.com.fitogether.api.domain.dto.response.screens.registration.experience.GetRegistrationExperienceScreenResponse
 import br.com.fitogether.api.domain.dto.response.screens.registration.goal.GetRegistrationGoalsScreenResponse
+import br.com.fitogether.api.domain.dto.response.screens.registration.preference.GetRegistrationPreferenceScreenResponse
 import br.com.fitogether.api.domain.service.screen.registration.ScreenRegistrationService
 import br.com.fitogether.api.domain.service.user.UserService
 import jakarta.validation.Valid
@@ -104,6 +105,15 @@ class RegistrationController(
             userId = userId,
             useCase = {
                 userService.setUserExperience(userId = userId, experienceId = experienceRequest.experienceId)
+            }
+        )
+    }
+
+    @GetMapping(value = ["/screen/preferences"])
+    fun getPreferencesScreen() : GetRegistrationPreferenceScreenResponse{
+        return execute(
+            useCase = { userId ->
+                screenRegistrationService.buildPreferenceScreen(userId = userId)
             }
         )
     }

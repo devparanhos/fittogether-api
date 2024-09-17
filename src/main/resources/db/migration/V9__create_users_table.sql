@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS user (
+CREATE TABLE IF NOT EXISTS users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     username VARCHAR(255) NOT NULL UNIQUE,
@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS user (
     access_token TEXT,
     gender_id BIGINT,
     experience_id BIGINT,
-    CONSTRAINT fk_gender FOREIGN KEY (gender_id) REFERENCES gender(id),
-    CONSTRAINT fk_experience FOREIGN KEY (experience_id) REFERENCES experience(id)
+    preference_id BIGINT,
+    CONSTRAINT fk_users_gender FOREIGN KEY (gender_id) REFERENCES genders(id),
+    CONSTRAINT fk_users_experience FOREIGN KEY (experience_id) REFERENCES experiences(id),
+    CONSTRAINT fk_users_preference FOREIGN KEY (preference_id) REFERENCES preferences(id)
 );

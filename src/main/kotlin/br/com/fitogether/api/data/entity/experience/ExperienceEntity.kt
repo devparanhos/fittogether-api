@@ -3,7 +3,7 @@ package br.com.fitogether.api.data.entity.experience
 import br.com.fitogether.api.core.enums.Experiences
 import jakarta.persistence.*
 
-@Entity(name="experience")
+@Entity(name="experiences")
 data class ExperienceEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

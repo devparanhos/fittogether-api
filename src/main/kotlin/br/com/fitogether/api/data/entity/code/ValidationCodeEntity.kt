@@ -3,7 +3,7 @@ package br.com.fitogether.api.data.entity.code
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
-@Entity(name = "validation_code")
+@Entity(name = "validation_codes")
 data class ValidationCodeEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,4 +1,4 @@
-CREATE TABLE validation_code (
+CREATE TABLE validation_codes (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     validated BOOLEAN NOT NULL,

@@ -120,7 +120,11 @@ class UserService(
 
         user.goals.addAll(goalsEntity)
 
-        return userRepository.save(user).toModel().toUserResponse()
+        return userRepository.save(
+            user.copy(
+                registrationStep = RegistrationStep.EXERCISES
+            )
+        ).toModel().toUserResponse()
     }
 
     fun setUserExercises(userId: Long, exercises: List<Exercise>) : UserResponse {
@@ -129,7 +133,11 @@ class UserService(
 
         user.exercises.addAll(exerciseEntity)
 
-        return userRepository.save(user).toModel().toUserResponse()
+        return userRepository.save(
+            user.copy(
+                registrationStep = RegistrationStep.EXPERIENCE
+            )
+        ).toModel().toUserResponse()
     }
 
 
@@ -137,6 +145,15 @@ class UserService(
         val user = userRepository.findById(userId).orElseThrow()
         val experienceEntity = experienceRepository.findById(experienceId).orElseThrow()
 
-        return userRepository.save(user.copy(experience = experienceEntity)).toModel().toUserResponse()
+        return userRepository.save(
+            user.copy(
+                experience = experienceEntity,
+                registrationStep = RegistrationStep.PREFERENCES
+            )
+        ).toModel().toUserResponse()
+    }
+
+    fun getUserById(userId: Long) : UserResponse {
+        return userRepository.findById(userId).orElseThrow().toModel().toUserResponse()
     }
 }

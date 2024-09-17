@@ -5,7 +5,7 @@ import br.com.fitogether.api.data.entity.user.UserEntity
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 
-@Entity(name = "goal")
+@Entity(name = "goals")
 data class GoalEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

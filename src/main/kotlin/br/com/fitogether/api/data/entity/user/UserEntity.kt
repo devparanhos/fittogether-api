@@ -6,6 +6,8 @@ import br.com.fitogether.api.data.entity.exercise.ExerciseEntity
 import br.com.fitogether.api.data.entity.experience.ExperienceEntity
 import br.com.fitogether.api.data.entity.gender.GenderEntity
 import br.com.fitogether.api.data.entity.goal.GoalEntity
+import br.com.fitogether.api.data.entity.gym.GymEntity
+import br.com.fitogether.api.data.entity.preference.PreferenceEntity
 
 import jakarta.persistence.*
 import org.hibernate.annotations.Fetch
@@ -14,7 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails
 
 import java.util.Date
 
-@Entity(name = "user")
+@Entity(name = "users")
 data class UserEntity(
 
     @Id
@@ -75,6 +77,18 @@ data class UserEntity(
     @ManyToOne
     @JoinColumn(name = "experience_id")
     val experience: ExperienceEntity? = null,
+
+    @ManyToOne
+    @JoinColumn(name = "preference_id")
+    val preferences: PreferenceEntity? = null,
+
+    @ManyToMany
+    @JoinTable(
+        name = "user_gyms",
+        joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "gym_id", referencedColumnName = "id")]
+    )
+    val gyms: Set<GymEntity> = setOf()
 ) : UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return mutableListOf()

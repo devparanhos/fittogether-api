@@ -3,7 +3,7 @@ package br.com.fitogether.api.data.entity.gender
 import br.com.fitogether.api.core.enums.Genders
 import jakarta.persistence.*
 
-@Entity(name = "gender")
+@Entity(name = "genders")
 data class GenderEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

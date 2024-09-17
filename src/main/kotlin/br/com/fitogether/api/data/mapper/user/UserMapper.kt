@@ -7,6 +7,8 @@ import br.com.fitogether.api.data.mapper.exercise.toModel
 import br.com.fitogether.api.data.mapper.experience.toModel
 import br.com.fitogether.api.data.mapper.gender.toModel
 import br.com.fitogether.api.data.mapper.goal.toModel
+import br.com.fitogether.api.data.mapper.gym.toModel
+import br.com.fitogether.api.data.mapper.preference.toModel
 import br.com.fitogether.api.domain.dto.request.user.CreateUserRequest
 import br.com.fitogether.api.domain.dto.response.AuthenticationResponse
 import br.com.fitogether.api.domain.dto.response.UserResponse
@@ -31,9 +33,12 @@ fun UserEntity.toModel() = User(
     username = this.username,
     email = this.email,
     registrationStep = this.registrationStep,
+    registrationStatus = this.registrationStatus,
     goals = this.goals.map { it.toModel() },
     exercises = this.exercises.map { it.toModel() },
-    experience = this.experience?.toModel()?.name
+    experience = this.experience?.toModel()?.name,
+    gyms = this.gyms.map { it.toModel() },
+    preferences = this.preferences?.toModel()
 )
 
 fun User.toUserResponse() = UserResponse(
@@ -42,10 +47,13 @@ fun User.toUserResponse() = UserResponse(
     name = this.name,
     username = this.username,
     registrationStep = this.registrationStep,
+    registrationStatus = this.registrationStatus,
     gender = this.gender,
     goals = this.goals,
     exercises = this.exercises,
     experience = this.experience,
+    gyms = this.gyms,
+    preferences = this.preferences
 )
 
 fun CreateUserRequest.toEntity() = UserEntity(
