@@ -2,8 +2,8 @@ package br.com.fitogether.api.domain.service.code
 
 import br.com.fitogether.api.core.enums.GeneralError
 import br.com.fitogether.api.core.exception.custom.ValidateCodeException
-import br.com.fitogether.api.data.entity.code.ValidationCodeEntity
-import br.com.fitogether.api.data.repository.code.ValidationCodeRepository
+import br.com.fitogether.api.infrastructure.database.entity.code.ValidationCodeEntity
+import br.com.fitogether.api.infrastructure.database.repository.code.ValidationCodeRepository
 import br.com.fitogether.api.domain.dto.request.user.ValidateCodeRequest
 import br.com.fitogether.api.domain.service.email.EmailService
 import org.springframework.beans.factory.annotation.Autowired

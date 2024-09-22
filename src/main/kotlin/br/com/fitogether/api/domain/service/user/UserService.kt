@@ -1,17 +1,17 @@
 package br.com.fitogether.api.domain.service.user
 
-import br.com.fitogether.api.config.security.SecurityConfig
+import br.com.fitogether.api.infrastructure.config.security.SecurityConfig
 import br.com.fitogether.api.core.enums.GeneralError
 import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
 import br.com.fitogether.api.core.exception.custom.ValidateCodeException
-import br.com.fitogether.api.data.entity.user.UserEntity
-import br.com.fitogether.api.data.mapper.user.*
-import br.com.fitogether.api.data.repository.exercise.ExerciseRepository
-import br.com.fitogether.api.data.repository.experience.ExperienceRepository
-import br.com.fitogether.api.data.repository.gender.GenderRepository
-import br.com.fitogether.api.data.repository.goal.GoalRepository
-import br.com.fitogether.api.data.repository.user.UserRepository
+import br.com.fitogether.api.infrastructure.database.entity.user.UserEntity
+import br.com.fitogether.api.infrastructure.database.mapper.user.*
+import br.com.fitogether.api.infrastructure.database.repository.exercise.ExerciseRepository
+import br.com.fitogether.api.infrastructure.database.repository.experience.ExperienceRepository
+import br.com.fitogether.api.infrastructure.database.repository.gender.GenderRepository
+import br.com.fitogether.api.infrastructure.database.repository.goal.GoalRepository
+import br.com.fitogether.api.infrastructure.database.repository.user.UserJpaRepository
 import br.com.fitogether.api.domain.dto.request.authentication.LoginRequest
 import br.com.fitogether.api.domain.dto.request.user.CreateUserRequest
 import br.com.fitogether.api.domain.dto.request.user.ValidateCodeRequest
@@ -32,7 +32,7 @@ import javax.security.auth.login.LoginException
 @Service
 @Transactional
 class UserService(
-    private val userRepository: UserRepository,
+    private val userJpaRepository: UserJpaRepository,
     private val genderRepository: GenderRepository,
     private val goalRepository: GoalRepository,
     private val exerciseRepository: ExerciseRepository,
@@ -43,7 +43,7 @@ class UserService(
 ) {
     fun validateEmail(request: ValidateEmailRequest) : ValidateEmailResponse  {
         try {
-            val user = userRepository.findByEmail(request.email)
+            val user = userJpaRepository.findByEmail(request.email)
 
             if (user?.registrationStatus != UserRegistrationStatus.CONCLUDED) {
                 validationCodeService.setValidationCode(email = request.email)
@@ -57,7 +57,7 @@ class UserService(
 
     fun validateCode(request: ValidateCodeRequest) : ValidateCodeResponse {
         if (validationCodeService.validateCode(request = request)) {
-            val user = userRepository.findByEmail(request.email)
+            val user = userJpaRepository.findByEmail(request.email)
             return ValidateCodeResponse(
                 userId = user?.id,
                 registrationStep = user?.registrationStep ?: RegistrationStep.START
@@ -71,7 +71,7 @@ class UserService(
     }
 
     fun createUser(request: CreateUserRequest) : AuthenticationResponse {
-        val user = userRepository.save(
+        val user = userJpaRepository.save(
             request.copy(
                 password = bCryptPasswordEncoder.encode(request.password),
             ).toEntity()
@@ -81,7 +81,7 @@ class UserService(
     }
 
     fun setUserAccessToken(userEntity: UserEntity) : AuthenticationResponse {
-        return userRepository.save(
+        return userJpaRepository.save(
             userEntity.copy(
                 accessToken = securityConfig.generateToken(user = userEntity)
             )
@@ -89,11 +89,11 @@ class UserService(
     }
 
     fun isEmailAvailable(email: String): Boolean {
-        return userRepository.findByEmail(email) == null
+        return userJpaRepository.findByEmail(email) == null
     }
 
     fun authenticate(login: LoginRequest) : AuthenticationResponse {
-        userRepository.findByEmail(email = login.email)?.let {
+        userJpaRepository.findByEmail(email = login.email)?.let {
             if (bCryptPasswordEncoder.matches(login.password, it.password)) {
                 return setUserAccessToken(userEntity = it)
             } else {
@@ -103,24 +103,24 @@ class UserService(
     }
 
     fun isUsernameAvailable(username: String) : Boolean {
-        return userRepository.findByUsername(username = username) == null
+        return userJpaRepository.findByUsername(username = username) == null
     }
 
     fun updateGender(genderId: Long, userId: Long) : UserResponse {
-        val user = userRepository.findById(userId).orElseThrow()
+        val user = userJpaRepository.findById(userId).orElseThrow()
         val gender = genderRepository.findById(genderId).orElseThrow()
-        return userRepository.save(
+        return userJpaRepository.save(
             user.copy(gender = gender, registrationStep = RegistrationStep.GOALS)
         ).toModel().toUserResponse()
     }
 
     fun setUserGoals(userId: Long, goals: List<Goal>) : UserResponse {
-        val user = userRepository.findById(userId).orElseThrow()
+        val user = userJpaRepository.findById(userId).orElseThrow()
         val goalsEntity = goalRepository.findAllById(goals.map { it.id }).toMutableSet()
 
         user.goals.addAll(goalsEntity)
 
-        return userRepository.save(
+        return userJpaRepository.save(
             user.copy(
                 registrationStep = RegistrationStep.EXERCISES
             )
@@ -128,12 +128,12 @@ class UserService(
     }
 
     fun setUserExercises(userId: Long, exercises: List<Exercise>) : UserResponse {
-        val user = userRepository.findById(userId).orElseThrow()
+        val user = userJpaRepository.findById(userId).orElseThrow()
         val exerciseEntity = exerciseRepository.findAllById(exercises.map { it.id }).toMutableSet()
 
         user.exercises.addAll(exerciseEntity)
 
-        return userRepository.save(
+        return userJpaRepository.save(
             user.copy(
                 registrationStep = RegistrationStep.EXPERIENCE
             )
@@ -142,10 +142,10 @@ class UserService(
 
 
     fun setUserExperience(userId: Long, experienceId: Long) : UserResponse {
-        val user = userRepository.findById(userId).orElseThrow()
+        val user = userJpaRepository.findById(userId).orElseThrow()
         val experienceEntity = experienceRepository.findById(experienceId).orElseThrow()
 
-        return userRepository.save(
+        return userJpaRepository.save(
             user.copy(
                 experience = experienceEntity,
                 registrationStep = RegistrationStep.PREFERENCES
@@ -154,6 +154,6 @@ class UserService(
     }
 
     fun getUserById(userId: Long) : UserResponse {
-        return userRepository.findById(userId).orElseThrow().toModel().toUserResponse()
+        return userJpaRepository.findById(userId).orElseThrow().toModel().toUserResponse()
     }
 }
