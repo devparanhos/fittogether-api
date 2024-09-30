@@ -3,7 +3,7 @@ package br.com.fitogether.api.domain.service.code
 import br.com.fitogether.api.core.enums.GeneralError
 import br.com.fitogether.api.core.exception.custom.ValidateCodeException
 import br.com.fitogether.api.infrastructure.database.entity.code.ValidationCodeEntity
-import br.com.fitogether.api.infrastructure.database.repository.code.ValidationCodeRepository
+import br.com.fitogether.api.infrastructure.database.repository.code.ValidationCodeJpaRepository
 import br.com.fitogether.api.domain.dto.request.user.ValidateCodeRequest
 import br.com.fitogether.api.domain.service.email.EmailService
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,27 +14,10 @@ import kotlin.random.Random
 
 @Service
 class ValidationCodeService(
-    @Autowired private val validationCodeRepository: ValidationCodeRepository,
+    @Autowired private val validationCodeRepository: ValidationCodeJpaRepository,
     @Autowired private val emailService: EmailService
 ) {
-    fun setValidationCode(email: String) {
-        try {
-            val entity = validationCodeRepository.findByEmail(email)
 
-            val validationCode = validationCodeRepository.save(
-                ValidationCodeEntity(
-                    id = entity?.id,
-                    email = email,
-                    code = generateRandomCode(),
-                    createdAt = LocalDateTime.now()
-                )
-            )
-
-            emailService.sendValidationCode(to = email, code = validationCode.code)
-        } catch (exception: Exception) {
-            throw exception
-        }
-    }
 
     fun validateCode(request: ValidateCodeRequest) : Boolean {
         val entity = validationCodeRepository.findByEmail(request.email)
@@ -72,9 +55,6 @@ class ValidationCodeService(
         return validationCodeRepository.findByEmail(email = email)?.validated ?: false
     }
 
-    private fun generateRandomCode(): Int {
-        return 100000 + Random.nextInt(900000)
-    }
 
     private fun isCodeExpired(codeTimeCreation: LocalDateTime, secondsThreshold: Int): Boolean {
         val now = LocalDateTime.now()

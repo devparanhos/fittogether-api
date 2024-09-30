@@ -4,5 +4,5 @@ import br.com.fitogether.api.domain.model.user.User
 
 interface UserRepository {
     fun findUserByUsername(username: String): User?
-    fun verifyEmail(email: String): Boolean
+    fun verifyEmail(email: String): User?
 }

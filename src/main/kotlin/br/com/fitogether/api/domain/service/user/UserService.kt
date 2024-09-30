@@ -41,19 +41,6 @@ class UserService(
     private val bCryptPasswordEncoder: BCryptPasswordEncoder,
     private val securityConfig: SecurityConfig
 ) {
-    fun validateEmail(request: ValidateEmailRequest) : ValidateEmailResponse  {
-        try {
-            val user = userJpaRepository.findByEmail(request.email)
-
-            if (user?.registrationStatus != UserRegistrationStatus.CONCLUDED) {
-                validationCodeService.setValidationCode(email = request.email)
-            }
-
-            return user.toValidateEmailResponse()
-        } catch (exception: Exception) {
-            throw exception
-        }
-    }
 
     fun validateCode(request: ValidateCodeRequest) : ValidateCodeResponse {
         if (validationCodeService.validateCode(request = request)) {

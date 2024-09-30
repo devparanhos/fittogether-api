@@ -30,8 +30,9 @@ class UserController(
     fun verifyEmail(
         @RequestBody @Valid request: VerifyEmailRequest
     ) : VerifyEmailResponse {
-
-        return userService.validateEmail(request = request)
+        return execute {
+            verifyEmailUseCase(email = request.email)
+        }
     }
 
     @PostMapping(value = ["validate-code"])

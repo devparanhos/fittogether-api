@@ -6,7 +6,7 @@ import br.com.fitogether.api.interfaceAdapters.dto.response.email.VerifyEmailRes
 class VerifyEmailUseCase(
     private val userRepository: UserRepository
 ) {
-    operator fun invoke() : VerifyEmailResponse {
-
+    operator fun invoke(email: String) : VerifyEmailResponse {
+        return userRepository.verifyEmail(email = email)
     }
 }
