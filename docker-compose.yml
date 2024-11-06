@@ -1,0 +1,15 @@
+services:
+  db:
+    container_name: mysql_local
+    image: mysql:8
+    volumes:
+      - ./db:/var/lib/mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "fittogether"
+      MYSQL_USER: "fittogether"
+      MYSQL_PASSWORD: "fittogether"
+      MYSQL_ROOT_HOST: "%"
+    ports:
+      - "3306:3306"

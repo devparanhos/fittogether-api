@@ -3,24 +3,26 @@ security:
     public-key: classpath:app.pub
     private-key: classpath:app.key
 spring:
+  config:
+    import: classpath:app.properties
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/fittogether
-    username: root
-    password: 123$qweR
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: true
   flyway:
-    url: jdbc:mysql://localhost:3306/fittogether
-    user: root
-    password: 123$qweR
+    url: ${SPRING_DATASOURCE_URL}
+    user: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   mail:
     host: smtp.gmail.com
     port: 587
-    username: dev.paranhos@gmail.com
-    password: kdzi wbmv gkjj ouja
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
     properties:
       mail:
         smtp:
