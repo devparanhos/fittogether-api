@@ -5,7 +5,7 @@ security:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DATABASE_URL:locahost}:${DATABASE_PORT:3306}/fittogether
+    url: jdbc:mysql://${DATABASE_URL:locahost}:${DATABASE_PORT:3306}/${DATABASE_NAME:fittogether}
     username: ${DATABASE_USER:root}
     password: ${DATABASE_PASSWORD:123$qweR}
   jpa:

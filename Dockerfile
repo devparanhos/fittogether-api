@@ -6,4 +6,5 @@ RUN mvn clean package -DskipTests
 FROM openjdk:20
 WORKDIR /app
 COPY --from=build ./app/target/*.jar ./fittogether-api.jar
+EXPOSE 8080
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","fittogether-api.jar"]
