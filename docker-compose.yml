@@ -6,10 +6,32 @@ services:
       - ./db:/var/lib/mysql
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_ROOT_PASSWORD: "123$qweR"
       MYSQL_DATABASE: "fittogether"
-      MYSQL_USER: "fittogether"
-      MYSQL_PASSWORD: "fittogether"
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: "123$qweR"
       MYSQL_ROOT_HOST: "%"
     ports:
       - "3306:3306"
+    networks:
+      - fittogether-network
+  fittogether-api:
+    image: rafaelcarpara/fittogether-api
+    build: ./fittogether-api
+    working_dir: /fittogether-api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/fittogether
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "root"
+    ports:
+      - "8080:8080"
+    command:
+      - mvn spring-boot:run
+    depends_on:
+      - db
+    networks:
+      - fittogether-network
+networks:
+  fittogether-network:
+    driver: bridge
+

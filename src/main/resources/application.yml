@@ -7,22 +7,22 @@ spring:
     import: classpath:app.properties
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: jdbc:mysql://localhost:3306/fittogether
+    username: root
+    password: 123$qweR
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: true
   flyway:
-    url: ${SPRING_DATASOURCE_URL}
-    user: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: jdbc:mysql://localhost:3306/fittogether
+    user: root
+    password: 123$qweR
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${SPRING_MAIL_USERNAME}
-    password: ${SPRING_MAIL_PASSWORD}
+    username: dev.paranhos@gmail.com
+    password: kdzi wbmv gkjj ouja
     properties:
       mail:
         smtp:
