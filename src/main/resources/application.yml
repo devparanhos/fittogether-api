@@ -5,17 +5,17 @@ security:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/fittogether
-    username: root
-    password: 123$qweR
+    url: jdbc:mysql://${DATABASE_URL:locahost}:${DATABASE_PORT:3306}/fittogether
+    username: ${DATABASE_USER:root}
+    password: ${DATABASE_PASSWORD:123$qweR}
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: true
   flyway:
-    url: jdbc:mysql://localhost:3306/fittogether
-    user: root
-    password: 123$qweR
+    url: jdbc:mysql://${DATABASE_URL:locahost}:${DATABASE_PORT:3306}/fittogether
+    user: ${DATABASE_USER:root}
+    password: ${DATABASE_PASSWORD:123$qweR}
   mail:
     host: smtp.gmail.com
     port: 587
