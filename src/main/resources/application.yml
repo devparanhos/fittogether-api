@@ -3,8 +3,6 @@ security:
     public-key: classpath:app.pub
     private-key: classpath:app.key
 spring:
-  config:
-    import: classpath:app.properties
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/fittogether
