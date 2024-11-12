@@ -14,6 +14,9 @@ import br.com.fitogether.api.domain.dto.response.screens.registration.experience
 import br.com.fitogether.api.domain.dto.response.screens.registration.goal.GetRegistrationGoalsScreenResponse
 import br.com.fitogether.api.domain.service.screen.registration.ScreenRegistrationService
 import br.com.fitogether.api.domain.service.user.UserService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
@@ -111,6 +114,14 @@ class RegistrationController(
         )
     }
 
+    @Operation(summary = "Salva as preferências de busca de parceiros")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "OK"),
+            ApiResponse(responseCode = "400", description = "Bad Request"),
+            ApiResponse(responseCode = "500", description = "Server internal error")
+        ]
+    )
     @PostMapping(value = ["{userId}/preferences"])
     fun setPreferences(
         @PathVariable("userId") userId: Long,
@@ -124,6 +135,14 @@ class RegistrationController(
         )
     }
 
+    @Operation(summary = "Atualiza as preferências de busca de parceiros")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "OK"),
+            ApiResponse(responseCode = "400", description = "Bad Request"),
+            ApiResponse(responseCode = "500", description = "Server internal error")
+        ]
+    )
     @PutMapping(value = ["{userId}/preferences"])
     fun updatePreferences(
         @PathVariable("userId") userId: Long,
