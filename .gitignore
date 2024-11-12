@@ -33,6 +33,6 @@ build/
 .vscode/
 
 #Enviroment
-src/main/resources/app.properties
+app.properties
 
 db/*

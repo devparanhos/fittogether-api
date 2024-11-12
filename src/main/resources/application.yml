@@ -4,7 +4,7 @@ security:
     private-key: classpath:app.key
 spring:
   config:
-    import: classpath:app.properties
+    import: file:./app.properties
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${SPRING_DATASOURCE_URL}
