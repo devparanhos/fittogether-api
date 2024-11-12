@@ -76,6 +76,11 @@ Você pode acessar o banco de dados diretamente usando um client MySQL. Use as c
 - **Usuário**: `seu_usuario`
 - **Senha**: `sua_senha`
 
+### 6. Documentação
+
+Você pode acessar a documentação em [http://localhost:8080/swagger-ui](http://localhost:8080/swagger-ui)
+
+
 ## Resumo
 
 1. Crie `app.properties` com as variáveis de ambiente.
