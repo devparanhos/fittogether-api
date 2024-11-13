@@ -36,3 +36,4 @@ build/
 src/main/resources/app.properties
 
 db/*
+app.properties
