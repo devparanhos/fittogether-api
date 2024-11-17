@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS addresses(
     number VARCHAR(25) NULL,
     complement VARCHAR(100) NULL,
     state VARCHAR(2) NOT NULL,
-    country VARCHAR(100) NOT NULL DEFAULT 'Brazil',
+    country VARCHAR(100) NOT NULL DEFAULT "Brazil",
     zipcode VARCHAR(25) NOT NULL,
     city VARCHAR(25) NOT NULL,
     lat VARCHAR(25) NULL,

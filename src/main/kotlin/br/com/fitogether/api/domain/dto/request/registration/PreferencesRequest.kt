@@ -5,6 +5,7 @@ import br.com.fitogether.api.domain.model.gym.Gym
 import br.com.fitogether.api.domain.validation.gender.annotation.GenderExists
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.NotEmpty
@@ -55,10 +56,20 @@ data class ScheduleItem(
     @field:JsonProperty("start_time")
     @field:JsonAlias("start_time")
     @field:NotNull(message = "O campo 'start_time' deve estar no formato HH:mm")
+    @Schema(
+        description = "Hora de início no formato HH:mm",
+        example = "08:30",
+        type = "string"
+    )
     val startTime: LocalTime,
 
     @field:JsonProperty("end_time")
     @field:JsonAlias("end_time")
     @field:NotNull(message = "O campo 'end_time' deve estar no formato HH:mm")
+    @Schema(
+        description = "Hora fim no formato HH:mm",
+        example = "08:30",
+        type = "string"
+    )
     val endTime: LocalTime
 )
