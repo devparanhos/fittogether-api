@@ -15,9 +15,7 @@ spring:
       ddl-auto: none
     show-sql: true
   flyway:
-    url: ${SPRING_DATASOURCE_URL}
-    user: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    enabled: true
   mail:
     host: smtp.gmail.com
     port: 587
