@@ -5,7 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
 open class BaseController {
-    fun <T>execute(userId: Long? = null, useCase: () -> T) : T {
+    fun <T> execute(userId: Long? = null, useCase: () -> T): T {
         val authentication = SecurityContextHolder.getContext().authentication
 
         try {
@@ -15,8 +15,9 @@ open class BaseController {
             } else {
                 throw UsernameNotFoundException("User not found")
             }
-        } catch (e:Exception) {
-            throw UsernameNotFoundException("User not found")
+        } catch (e: Exception) {
+            throw e
+//            throw UsernameNotFoundException("User not found")
         }
     }
 }

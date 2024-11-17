@@ -6,9 +6,9 @@ import br.com.fitogether.api.data.entity.exercise.ExerciseEntity
 import br.com.fitogether.api.data.entity.experience.ExperienceEntity
 import br.com.fitogether.api.data.entity.gender.GenderEntity
 import br.com.fitogether.api.data.entity.goal.GoalEntity
+import br.com.fitogether.api.data.entity.preference.PreferenceEntity
 
 import jakarta.persistence.*
-import org.hibernate.annotations.Fetch
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
@@ -49,7 +49,7 @@ data class UserEntity(
     @Enumerated(EnumType.STRING)
     val registrationStep: RegistrationStep = RegistrationStep.GENDER,
 
-    @Column(name="access_token")
+    @Column(name = "access_token")
     val accessToken: String? = null,
 
     @ManyToOne
@@ -75,6 +75,10 @@ data class UserEntity(
     @ManyToOne
     @JoinColumn(name = "experience_id")
     val experience: ExperienceEntity? = null,
+
+    @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
+    var preferences: PreferenceEntity? = null
+
 ) : UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return mutableListOf()

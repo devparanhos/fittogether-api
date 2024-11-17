@@ -38,6 +38,7 @@ class SecurityConfig(
     private lateinit var privateKey : RSAPrivateKey
 
     private val publicPostEndpoints = arrayOf("/users", "users/validate-email", "/users/validate-code", "users/login")
+    private val publicGetEndpoints = arrayOf("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
 
     @Bean
     fun bCryptPasswordEncoder(): BCryptPasswordEncoder = BCryptPasswordEncoder()
@@ -47,6 +48,7 @@ class SecurityConfig(
         http.csrf{ it.disable() }
             .authorizeHttpRequests{ it
                 .requestMatchers(HttpMethod.POST, *publicPostEndpoints).permitAll()
+                .requestMatchers(HttpMethod.GET, *publicGetEndpoints).permitAll()
                 .anyRequest().authenticated()
             }
             .sessionManagement{ it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }

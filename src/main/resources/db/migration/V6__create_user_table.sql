@@ -11,6 +11,9 @@ CREATE TABLE IF NOT EXISTS user (
     access_token TEXT,
     gender_id BIGINT,
     experience_id BIGINT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL,
     CONSTRAINT fk_gender FOREIGN KEY (gender_id) REFERENCES gender(id),
     CONSTRAINT fk_experience FOREIGN KEY (experience_id) REFERENCES experience(id)
 );

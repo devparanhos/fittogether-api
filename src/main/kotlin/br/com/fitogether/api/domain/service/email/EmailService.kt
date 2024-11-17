@@ -13,12 +13,16 @@ class EmailService(
 
     @Throws(MessagingException::class)
     fun sendValidationCode(to: String, code: Int) {
-        val message = SimpleMailMessage().apply {
-            setTo(to)
-            subject = "Código de validação - Fit Together"
-            text = code.toString()
-        }
+        try {
+            val message = SimpleMailMessage().apply {
+                setTo(to)
+                subject = "Código de validação - Fit Together"
+                text = code.toString()
+            }
 
-        mailSender.send(message)
+            mailSender.send(message)
+        } catch (e: Exception) {
+            throw e
+        }
     }
 }

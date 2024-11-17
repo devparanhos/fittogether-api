@@ -10,7 +10,7 @@
 
 ### 1. Criar o Arquivo `app.properties`
 
-Crie um arquivo chamado `app.properties` no diretório `src/main/resources`. Este arquivo conterá as variáveis de ambiente usadas pela aplicação, como informações de acesso ao banco de dados e configurações de e-mail.
+Crie um arquivo chamado `app.properties` no diretório raiz do projeto. Este arquivo conterá as variáveis de ambiente usadas pela aplicação, como informações de acesso ao banco de dados e configurações de e-mail.
 
 No arquivo `app.properties`, adicione o seguinte conteúdo, substituindo os valores das variáveis conforme necessário:
 
@@ -75,6 +75,11 @@ Você pode acessar o banco de dados diretamente usando um client MySQL. Use as c
 - **Porta**: `3306`
 - **Usuário**: `seu_usuario`
 - **Senha**: `sua_senha`
+
+### 6. Documentação
+
+Você pode acessar a documentação em [http://localhost:8080/swagger-ui](http://localhost:8080/swagger-ui)
+
 
 ## Resumo
 
