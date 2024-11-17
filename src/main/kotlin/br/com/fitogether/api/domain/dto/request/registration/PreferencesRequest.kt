@@ -13,12 +13,33 @@ import jakarta.validation.constraints.Size
 import org.hibernate.validator.constraints.Range
 import java.time.LocalTime
 
+data class GenderIdRequest(
+    @Schema(
+        description = "Identificador único do gênero",
+        example = "1"
+    )
+    val id: Long
+)
+
+data class GymIdRequest(
+    @Schema(
+        description = "Identificador único da gym",
+        example = "1"
+    )
+    val id: Long
+)
+
+
 data class PreferencesRequest(
     @field:JsonProperty("genders_id")
     @field:JsonAlias("genders_id")
     @field:NotNull(message = "Você precisa informar um gênero")
     @GenderExists
-    val genders: List<Gender>,
+    @Schema(
+        description = "Lista de IDs de gêneros",
+        example = "[{\"id\": 1}, {\"id\": 2}]"
+    )
+    val genders: List<GenderIdRequest>,
 
     @field:JsonProperty("radius_distance")
     @field:JsonAlias("radius_distance")
@@ -44,7 +65,11 @@ data class PreferencesRequest(
     @field:JsonProperty("gyms_id")
     @field:JsonAlias("gyms_id")
     @field:NotNull(message = "Você precisa informar a(s) academia(s) que você gosta de frequentar")
-    val gyms: List<Gym>,
+    @Schema(
+        description = "Lista de IDs de gym",
+        example = "[{\"id\": 1}, {\"id\": 2}]"
+    )
+    val gyms: List<GymIdRequest>,
 )
 
 data class ScheduleItem(
