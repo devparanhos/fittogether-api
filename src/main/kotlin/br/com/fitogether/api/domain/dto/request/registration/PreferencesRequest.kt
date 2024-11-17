@@ -5,6 +5,7 @@ import br.com.fitogether.api.domain.model.gym.Gym
 import br.com.fitogether.api.domain.validation.gender.annotation.GenderExists
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.NotEmpty
@@ -12,12 +13,33 @@ import jakarta.validation.constraints.Size
 import org.hibernate.validator.constraints.Range
 import java.time.LocalTime
 
+data class GenderIdRequest(
+    @Schema(
+        description = "Identificador único do gênero",
+        example = "1"
+    )
+    val id: Long
+)
+
+data class GymIdRequest(
+    @Schema(
+        description = "Identificador único da gym",
+        example = "1"
+    )
+    val id: Long
+)
+
+
 data class PreferencesRequest(
     @field:JsonProperty("genders_id")
     @field:JsonAlias("genders_id")
     @field:NotNull(message = "Você precisa informar um gênero")
     @GenderExists
-    val genders: List<Gender>,
+    @Schema(
+        description = "Lista de IDs de gêneros",
+        example = "[{\"id\": 1}, {\"id\": 2}]"
+    )
+    val genders: List<GenderIdRequest>,
 
     @field:JsonProperty("radius_distance")
     @field:JsonAlias("radius_distance")
@@ -43,7 +65,11 @@ data class PreferencesRequest(
     @field:JsonProperty("gyms_id")
     @field:JsonAlias("gyms_id")
     @field:NotNull(message = "Você precisa informar a(s) academia(s) que você gosta de frequentar")
-    val gyms: List<Gym>,
+    @Schema(
+        description = "Lista de IDs de gym",
+        example = "[{\"id\": 1}, {\"id\": 2}]"
+    )
+    val gyms: List<GymIdRequest>,
 )
 
 data class ScheduleItem(
@@ -55,10 +81,20 @@ data class ScheduleItem(
     @field:JsonProperty("start_time")
     @field:JsonAlias("start_time")
     @field:NotNull(message = "O campo 'start_time' deve estar no formato HH:mm")
+    @Schema(
+        description = "Hora de início no formato HH:mm",
+        example = "08:30",
+        type = "string"
+    )
     val startTime: LocalTime,
 
     @field:JsonProperty("end_time")
     @field:JsonAlias("end_time")
     @field:NotNull(message = "O campo 'end_time' deve estar no formato HH:mm")
+    @Schema(
+        description = "Hora fim no formato HH:mm",
+        example = "08:30",
+        type = "string"
+    )
     val endTime: LocalTime
 )
