@@ -24,6 +24,7 @@ class ValidationCodeService(
             val validationCode = validationCodeRepository.save(
                 ValidationCodeEntity(
                     id = entity?.id,
+                    validated = entity?.validated == true,
                     email = email,
                     code = generateRandomCode(),
                     createdAt = LocalDateTime.now()
@@ -36,7 +37,7 @@ class ValidationCodeService(
         }
     }
 
-    fun validateCode(request: ValidateCodeRequest) : Boolean {
+    fun validateCode(request: ValidateCodeRequest): Boolean {
         val entity = validationCodeRepository.findByEmail(request.email)
 
         when {
@@ -68,7 +69,7 @@ class ValidationCodeService(
         }
     }
 
-    fun isEmailValidated(email: String) : Boolean {
+    fun isEmailValidated(email: String): Boolean {
         return validationCodeRepository.findByEmail(email = email)?.validated ?: false
     }
 
