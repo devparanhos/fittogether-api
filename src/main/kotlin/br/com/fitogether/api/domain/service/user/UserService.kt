@@ -11,6 +11,8 @@ import br.com.fitogether.api.data.entity.preference.PreferenceEntity
 import br.com.fitogether.api.data.entity.preference.PreferenceScheduleEntity
 import br.com.fitogether.api.data.entity.user.UserEntity
 import br.com.fitogether.api.data.mapper.user.*
+import br.com.fitogether.api.data.mapper.validationCode.toValidateEmailResponse
+import br.com.fitogether.api.data.repository.code.ValidationCodeRepository
 import br.com.fitogether.api.data.repository.exercise.ExerciseRepository
 import br.com.fitogether.api.data.repository.experience.ExperienceRepository
 import br.com.fitogether.api.data.repository.gender.GenderRepository
@@ -51,6 +53,7 @@ class UserService(
     private val experienceRepository: ExperienceRepository,
     private val preferenceRepository: PreferenceRepository,
     private val preferenceScheduleRepository: PreferenceScheduleRepository,
+    private val validationCodeRepository: ValidationCodeRepository,
     private val gymRepository: GymRepository,
     private val validationCodeService: ValidationCodeService,
     private val bCryptPasswordEncoder: BCryptPasswordEncoder,
@@ -59,12 +62,13 @@ class UserService(
     fun validateEmail(request: ValidateEmailRequest): ValidateEmailResponse {
         try {
             val user = userRepository.findByEmail(request.email)
+            val validationCode = validationCodeRepository.findByEmail(request.email)
 
-            if (user?.registrationStatus != UserRegistrationStatus.CONCLUDED) {
+            if (user?.registrationStatus != UserRegistrationStatus.CONCLUDED && validationCode?.validated != true) {
                 validationCodeService.setValidationCode(email = request.email)
             }
 
-            return user.toValidateEmailResponse()
+            return validationCode.toValidateEmailResponse()
         } catch (exception: Exception) {
             throw exception
         }
