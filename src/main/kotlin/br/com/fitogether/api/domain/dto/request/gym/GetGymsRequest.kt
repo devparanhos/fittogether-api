@@ -1,22 +1,17 @@
 package br.com.fitogether.api.domain.dto.request.gym
 
-import com.fasterxml.jackson.annotation.JsonAlias
-import com.fasterxml.jackson.annotation.JsonProperty
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotNull
 
 data class GetGymsRequest(
-    @field:JsonProperty("lat")
-    @field:JsonAlias("lat")
-    @field:NotNull(message = "Você precisa informar a latitude")
-    val lat: String,
+    @field:NotNull(message = "Latitude is required")
+    @field:Min(value = -90, message = "Latitude must be >= -90")
+    @field:Max(value = 90, message = "Latitude must be <= 90")
+    val lat: Double?,
 
-    @field:JsonProperty("lng")
-    @field:JsonAlias("lng")
-    @field:NotNull(message = "Você precisa informar a longitude")
-    val lng: String,
-
-    @field:JsonProperty("radius_distance")
-    @field:JsonAlias("radius_distance")
-    @field:NotNull(message = "Você precisa informar a distância máxima desejada")
-    val radiusDistance: Int,
+    @field:NotNull(message = "Longitude is required")
+    @field:Min(value = -180, message = "Longitude must be >= -180")
+    @field:Max(value = 180, message = "Longitude must be <= 180")
+    val lng: Double?
 )
