@@ -2,6 +2,7 @@ package br.com.fitogether.api.data.entity.user
 
 import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
+import br.com.fitogether.api.data.entity.code.ValidationCodeEntity
 import br.com.fitogether.api.data.entity.exercise.ExerciseEntity
 import br.com.fitogether.api.data.entity.experience.ExperienceEntity
 import br.com.fitogether.api.data.entity.gender.GenderEntity
@@ -77,7 +78,10 @@ data class UserEntity(
     val experience: ExperienceEntity? = null,
 
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
-    var preferences: PreferenceEntity? = null
+    var preferences: PreferenceEntity? = null,
+
+    @OneToOne(mappedBy = "user")
+    var validationCode: ValidationCodeEntity? = null
 
 ) : UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
