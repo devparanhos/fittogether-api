@@ -133,7 +133,9 @@ class UserService(
 
         user.goals.addAll(goalsEntity)
 
-        return userRepository.save(user).toModel().toUserResponse()
+        return userRepository.save(
+            user.copy(registrationStep = RegistrationStep.EXERCISES)
+        ).toModel().toUserResponse()
     }
 
     fun setUserExercises(userId: Long, exercises: List<Exercise>): UserResponse {
@@ -142,7 +144,9 @@ class UserService(
 
         user.exercises.addAll(exerciseEntity)
 
-        return userRepository.save(user).toModel().toUserResponse()
+        return userRepository.save(
+            user.copy(registrationStep = RegistrationStep.EXPERIENCE)
+        ).toModel().toUserResponse()
     }
 
 
@@ -150,7 +154,9 @@ class UserService(
         val user = userRepository.findById(userId).orElseThrow()
         val experienceEntity = experienceRepository.findById(experienceId).orElseThrow()
 
-        return userRepository.save(user.copy(experience = experienceEntity)).toModel().toUserResponse()
+        return userRepository.save(
+            user.copy(experience = experienceEntity, registrationStep = RegistrationStep.PREFERENCES)
+        ).toModel().toUserResponse()
     }
 
     fun setUserPreferences(userId: Long, preferences: PreferencesRequest): UserResponse {
@@ -192,7 +198,9 @@ class UserService(
 
             savedPreferences.schedules.addAll(schedules)
 
-            return userRepository.save(user.copy(preferences = savedPreferences)).toModel().toUserResponse()
+            return userRepository.save(
+                user.copy(preferences = savedPreferences, registrationStep = RegistrationStep.FINISHED)
+            ).toModel().toUserResponse()
 
         } catch (exception: Exception) {
             throw exception
