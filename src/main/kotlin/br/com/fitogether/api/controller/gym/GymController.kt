@@ -26,7 +26,7 @@ class GymController(
             ApiResponse(responseCode = "500", description = "Server internal error")
         ]
     )
-    @GetMapping(value = ["list"])
+    @GetMapping
     fun getGyms(
 //        @RequestParam @Valid getGymsRequest: GetGymsRequest
     ): List<GymResponse> {
