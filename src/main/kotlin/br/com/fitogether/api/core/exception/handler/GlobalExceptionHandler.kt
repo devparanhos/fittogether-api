@@ -9,6 +9,7 @@ import br.com.fitogether.api.core.extension.transformToFieldString
 import jakarta.mail.MessagingException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.oauth2.jwt.JwtException
 import org.springframework.web.ErrorResponse
@@ -141,6 +142,19 @@ class GlobalExceptionHandler {
                 errors = null
             ),
             HttpStatus.UNAUTHORIZED
+        )
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleMissingBodyException(exception: HttpMessageNotReadableException): ResponseEntity<GlobalException> {
+        return ResponseEntity(
+            GlobalException(
+                statusCode = HttpStatus.BAD_REQUEST.value(),
+                message = GeneralError.EV005.message,
+                internalCode = GeneralError.EV005.code,
+                errors = null
+            ),
+            HttpStatus.BAD_REQUEST
         )
     }
 }
