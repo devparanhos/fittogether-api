@@ -15,9 +15,9 @@ class S3Service(
 ) {
     fun uploadFile(file: MultipartFile, userId: Long): ResponseEntity<String> {
 
-        clearObjectsByFolder("users/$userId")
-
-        val fileName = "users/$userId/${System.currentTimeMillis()}-${file.originalFilename}"
+        val prefix = "users/$userId"
+        val fileName = "$prefix/${System.currentTimeMillis()}-${file.originalFilename}"
+        clearObjectsByPrefix(prefix)
 
         try {
             // monta o request para fazer o upload da foto
@@ -40,14 +40,12 @@ class S3Service(
         }
     }
 
-    fun clearObjectsByFolder(folder: String) {
-        val bucketName = awsS3Properties.bucketName
-
+    fun clearObjectsByPrefix(prefix: String) {
         try {
             // lista os objetos dentro da pasta para apagar posteriormente
             val listObjectsRequest = ListObjectsV2Request.builder()
-                .bucket(bucketName)
-                .prefix(folder)
+                .bucket(awsS3Properties.bucketName)
+                .prefix(prefix)
                 .build()
 
             val listObjectsResponse = s3Client.listObjectsV2(listObjectsRequest)
@@ -55,7 +53,7 @@ class S3Service(
             // Verifica se há objetos para excluir e percorre os objetos excluindo-os
             if (listObjectsResponse.hasContents() && listObjectsResponse.contents().isNotEmpty()) {
                 val deleteObjectsRequest = DeleteObjectsRequest.builder()
-                    .bucket(bucketName)
+                    .bucket(awsS3Properties.bucketName)
                     .delete(
                         Delete.builder()
                             .objects(
@@ -70,7 +68,7 @@ class S3Service(
                 s3Client.deleteObjects(deleteObjectsRequest)
             }
         } catch (e: Exception) {
-            throw RuntimeException("Erro ao deletar objetos no prefixo $folder: ${e.message}", e)
+            throw RuntimeException("Erro ao deletar objetos no prefixo $prefix: ${e.message}", e)
         }
     }
 }
