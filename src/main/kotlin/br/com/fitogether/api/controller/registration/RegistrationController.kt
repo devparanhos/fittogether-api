@@ -12,20 +12,24 @@ import br.com.fitogether.api.domain.dto.response.UserResponse
 import br.com.fitogether.api.domain.dto.response.screens.registration.exercise.GetRegistrationExerciseScreenResponse
 import br.com.fitogether.api.domain.dto.response.screens.registration.experience.GetRegistrationExperienceScreenResponse
 import br.com.fitogether.api.domain.dto.response.screens.registration.goal.GetRegistrationGoalsScreenResponse
+import br.com.fitogether.api.domain.service.aws.S3Service
 import br.com.fitogether.api.domain.service.screen.registration.ScreenRegistrationService
 import br.com.fitogether.api.domain.service.user.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/registration")
 class RegistrationController(
     private val screenRegistrationService: ScreenRegistrationService,
-    private val userService: UserService
+    private val userService: UserService,
+    private val s3Service: S3Service
 ) : BaseController() {
 
     @GetMapping(value = ["screen/genders"])
@@ -152,6 +156,27 @@ class RegistrationController(
             userId = userId,
             useCase = {
                 userService.updateUserPreferences(userId = userId, preferences = preferencesRequest)
+            }
+        )
+    }
+
+    @PostMapping(value = ["{userId}/photo"])
+    fun uploadPhoto(
+        @PathVariable userId: Long,
+        @RequestParam("file") file: MultipartFile
+    ): ResponseEntity<String> {
+        if (file.isEmpty) {
+            return ResponseEntity.badRequest().body("A imagem não pode estar vazia")
+        }
+
+        if (!file.contentType?.startsWith("image/")!!) {
+            return ResponseEntity.badRequest().body("O arquivo enviado não é uma imagem")
+        }
+
+        return execute(
+            userId = userId,
+            useCase = {
+                s3Service.uploadFile(file, userId)
             }
         )
     }
