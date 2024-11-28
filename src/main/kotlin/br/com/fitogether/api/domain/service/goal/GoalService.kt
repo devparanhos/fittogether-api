@@ -1,7 +1,7 @@
 package br.com.fitogether.api.domain.service.goal
 
-import br.com.fitogether.api.infrastructure.database.mapper.goal.toModel
-import br.com.fitogether.api.infrastructure.database.repository.goal.GoalRepository
+import br.com.fitogether.api.data.mapper.goal.toModel
+import br.com.fitogether.api.data.repository.goal.GoalRepository
 import br.com.fitogether.api.domain.model.goal.Goal
 import org.springframework.stereotype.Service
 

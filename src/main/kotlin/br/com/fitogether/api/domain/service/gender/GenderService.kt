@@ -1,7 +1,7 @@
 package br.com.fitogether.api.domain.service.gender
 
-import br.com.fitogether.api.infrastructure.database.mapper.gender.toModel
-import br.com.fitogether.api.infrastructure.database.repository.gender.GenderRepository
+import br.com.fitogether.api.data.mapper.gender.toModel
+import br.com.fitogether.api.data.repository.gender.GenderRepository
 import br.com.fitogether.api.domain.model.gender.Gender
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrNull
