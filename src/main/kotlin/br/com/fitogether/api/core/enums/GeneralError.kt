@@ -18,4 +18,9 @@ enum class GeneralError(val message: String, val code: String) {
     //Erros de autenticação
     EAUTH001(message = "Não foi possível fazer login. Credenciais inválidas", code = "EAUTH-001"),
     EAUTH002(message = "Acesso negado, a autenticação falhou", code = "EAUTH-002"),
+    EAUTH003(message = "Você não tem permissão para acessar esse recurso", code = "EAUTH-003"),
+
+    //Erros gênericos
+    EGEN001(message = "Algo de errado aconteceu durante a autenticação da requisição, tente novamente", code = "EGEN-001")
+
 }

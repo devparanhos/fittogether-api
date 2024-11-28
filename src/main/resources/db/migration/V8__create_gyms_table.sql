@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS gyms(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    address_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    CONSTRAINT fk_gyms_address FOREIGN KEY (address_id) REFERENCES gyms(id)
+)

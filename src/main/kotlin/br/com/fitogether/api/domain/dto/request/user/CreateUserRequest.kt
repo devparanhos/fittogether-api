@@ -1,12 +1,11 @@
 package br.com.fitogether.api.domain.dto.request.user
 
-import br.com.fitogether.api.domain.validation.date.annotation.AgePermitted
-import br.com.fitogether.api.domain.validation.date.annotation.BirthdateValid
-import br.com.fitogether.api.domain.validation.email.annotation.EmailAvailable
-import br.com.fitogether.api.domain.validation.email.annotation.EmailValidated
-import br.com.fitogether.api.domain.validation.password.annotation.PasswordMatches
-import br.com.fitogether.api.domain.validation.password.annotation.PasswordValid
-import br.com.fitogether.api.domain.validation.username.annotation.UsernameAvailable
+import br.com.fitogether.api.interfaceAdapters.validation.date.annotation.AgePermitted
+import br.com.fitogether.api.interfaceAdapters.validation.date.annotation.BirthdateValid
+import br.com.fitogether.api.interfaceAdapters.validation.email.annotation.EmailAvailable
+import br.com.fitogether.api.interfaceAdapters.validation.password.annotation.PasswordMatches
+import br.com.fitogether.api.interfaceAdapters.validation.password.annotation.PasswordValid
+import br.com.fitogether.api.interfaceAdapters.validation.username.annotation.UsernameAvailable
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonFormat
 import jakarta.validation.constraints.Email
@@ -19,7 +18,7 @@ data class CreateUserRequest(
     @field:Email(message = "O e-mail informado não é válido")
     @field:NotEmpty(message = "O e-mail não pode ser vazio")
     @EmailAvailable
-    @EmailValidated
+    @br.com.fitogether.api.interfaceAdapters.validation.email.annotation.EmailValidated
     val email: String,
 
     @field:NotBlank(message = "O nome de usuário é obrigatório")
