@@ -1,12 +1,13 @@
-package br.com.fitogether.api.infrastructure.database.entity.user
+package br.com.fitogether.api.data.entity.user
 
 import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
-import br.com.fitogether.api.infrastructure.database.entity.exercise.ExerciseEntity
-import br.com.fitogether.api.infrastructure.database.entity.experience.ExperienceEntity
-import br.com.fitogether.api.infrastructure.database.entity.gender.GenderEntity
-import br.com.fitogether.api.infrastructure.database.entity.goal.GoalEntity
-import br.com.fitogether.api.infrastructure.database.entity.gym.GymEntity
+import br.com.fitogether.api.data.entity.code.ValidationCodeEntity
+import br.com.fitogether.api.data.entity.exercise.ExerciseEntity
+import br.com.fitogether.api.data.entity.experience.ExperienceEntity
+import br.com.fitogether.api.data.entity.gender.GenderEntity
+import br.com.fitogether.api.data.entity.goal.GoalEntity
+import br.com.fitogether.api.data.entity.preference.PreferenceEntity
 
 import jakarta.persistence.*
 import org.springframework.security.core.GrantedAuthority
@@ -14,7 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails
 
 import java.util.Date
 
-@Entity(name = "users")
+@Entity(name = "user")
 data class UserEntity(
 
     @Id
@@ -49,7 +50,7 @@ data class UserEntity(
     @Enumerated(EnumType.STRING)
     val registrationStep: RegistrationStep = RegistrationStep.GENDER,
 
-    @Column(name="access_token")
+    @Column(name = "access_token")
     val accessToken: String? = null,
 
     @ManyToOne
@@ -76,18 +77,16 @@ data class UserEntity(
     @JoinColumn(name = "experience_id")
     val experience: ExperienceEntity? = null,
 
-    @ManyToOne
-    @JoinColumn(name = "preference_id")
-    val preferences: br.com.fitogether.api.infrastructure.database.entity.preference.PreferenceEntity? = null,
+    @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
+    var preferences: PreferenceEntity? = null,
 
-    @ManyToMany
-    @JoinTable(
-        name = "user_gyms",
-        joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
-        inverseJoinColumns = [JoinColumn(name = "gym_id", referencedColumnName = "id")]
-    )
-    val gyms: Set<GymEntity> = setOf()
-) : UserDetails {
+    @OneToOne(mappedBy = "user")
+    var validationCode: ValidationCodeEntity? = null,
+
+    @Column(name = "photo", nullable = false)
+    val photo: String = "",
+
+    ) : UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return mutableListOf()
     }

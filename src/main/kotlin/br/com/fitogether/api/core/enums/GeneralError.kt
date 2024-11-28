@@ -7,6 +7,7 @@ enum class GeneralError(val message: String, val code: String) {
     EV002(message = "O e-mail informado não contém um código atribuído", code = "EV-002"),
     EV003(message = "O código informado é inválido", code = "EV-003"),
     EV004(message = "O código informado expirou", code = "EV-004"),
+    EV005(message = "O corpo da requisição é inválido ou está ausente.", code = "EV-005"),
 
     //Erros de request
     ER001(message = "Método HTTP informado não é suportado para esse endpoint", code = "ER-001"),

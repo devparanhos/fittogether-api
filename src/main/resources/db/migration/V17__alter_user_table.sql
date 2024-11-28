@@ -1,0 +1,2 @@
+ALTER TABLE user
+ADD COLUMN photo VARCHAR(255) NOT NULL AFTER registration_step;

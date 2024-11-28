@@ -1,5 +1,6 @@
 package br.com.fitogether.api.infrastructure.database.entity.code
 
+import br.com.fitogether.api.data.entity.user.UserEntity
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -23,4 +24,8 @@ data class ValidationCodeEntity(
 
     @Column(name="created_at", nullable = false)
     var createdAt: LocalDateTime = LocalDateTime.now(),
+
+    @OneToOne
+    @JoinColumn(name = "email", referencedColumnName = "email", insertable = false, updatable = false)
+    var user: UserEntity? = null
 )
