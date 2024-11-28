@@ -36,4 +36,4 @@ build/
 app.properties
 
 db/*
-app.properties
+.DS_Store

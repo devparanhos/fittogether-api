@@ -32,6 +32,7 @@ import br.com.fitogether.api.domain.dto.response.ValidateCodeResponse
 import br.com.fitogether.api.domain.dto.response.ValidateEmailResponse
 import br.com.fitogether.api.domain.model.exercise.Exercise
 import br.com.fitogether.api.domain.model.goal.Goal
+import br.com.fitogether.api.domain.service.aws.S3Service
 import br.com.fitogether.api.domain.service.code.ValidationCodeService
 import jakarta.transaction.Transactional
 import org.springframework.cglib.core.Local
@@ -39,6 +40,7 @@ import org.springframework.http.HttpStatus
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.security.auth.login.LoginException
@@ -56,6 +58,7 @@ class UserService(
     private val validationCodeRepository: ValidationCodeRepository,
     private val gymRepository: GymRepository,
     private val validationCodeService: ValidationCodeService,
+    private val s3Service: S3Service,
     private val bCryptPasswordEncoder: BCryptPasswordEncoder,
     private val securityConfig: SecurityConfig
 ) {
@@ -251,6 +254,23 @@ class UserService(
             preferenceRepository.save(existingPreferences)
 
             return userRepository.save(user.copy(preferences = existingPreferences)).toModel().toUserResponse()
+        } catch (exception: Exception) {
+            throw exception
+        }
+    }
+
+    fun uploadPhoto(userId: Long, file: MultipartFile): UserResponse {
+        try {
+            val user = userRepository.findById(userId).orElseThrow {
+                RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado.")
+            }
+
+            val photoUrl = s3Service.uploadUserPhoto(userId, file)
+
+            return userRepository.save(
+                user.copy(photo = photoUrl)
+            ).toModel().toUserResponse()
+
         } catch (exception: Exception) {
             throw exception
         }

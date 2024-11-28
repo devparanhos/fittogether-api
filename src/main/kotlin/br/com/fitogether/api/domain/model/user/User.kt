@@ -10,6 +10,7 @@ data class User(
     val email: String,
     val name: String,
     val registrationStep: RegistrationStep,
+    val photo: String?,
     val username: String,
     val gender: String?,
     val goals: List<Goal>,
