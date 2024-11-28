@@ -19,6 +19,9 @@ data class UserResponse(
     @field:JsonProperty("registration_step")
     val registrationStep: RegistrationStep,
 
+    @field:JsonProperty("photo")
+    val photo: String?,
+
     @field:JsonProperty("username")
     val username: String,
 

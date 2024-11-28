@@ -81,9 +81,12 @@ data class UserEntity(
     var preferences: PreferenceEntity? = null,
 
     @OneToOne(mappedBy = "user")
-    var validationCode: ValidationCodeEntity? = null
+    var validationCode: ValidationCodeEntity? = null,
 
-) : UserDetails {
+    @Column(name = "photo", nullable = false)
+    val photo: String = "",
+
+    ) : UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return mutableListOf()
     }

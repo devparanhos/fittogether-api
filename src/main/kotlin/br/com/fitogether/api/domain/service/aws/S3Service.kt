@@ -13,13 +13,10 @@ class S3Service(
     private val s3Client: S3Client,
     private val awsS3Properties: AwsS3Properties
 ) {
-    fun uploadFile(file: MultipartFile, userId: Long): ResponseEntity<String> {
 
-        val prefix = "users/$userId"
-        val fileName = "$prefix/${System.currentTimeMillis()}-${file.originalFilename}"
-        clearObjectsByPrefix(prefix)
-
+    fun uploadFile(prefix: String, file: MultipartFile): String {
         try {
+            val fileName = "$prefix/${System.currentTimeMillis()}-${file.originalFilename}"
             // monta o request para fazer o upload da foto
             val request = PutObjectRequest.builder()
                 .bucket(awsS3Properties.bucketName)
@@ -33,11 +30,16 @@ class S3Service(
                 RequestBody.fromBytes(file.bytes)
             )
 
-            val fileUrl = "https://${awsS3Properties.bucketName}.s3.${awsS3Properties.region}.amazonaws.com/$fileName"
-            return ResponseEntity.ok("Imagem enviada com sucesso: $fileUrl")
+            return "https://${awsS3Properties.bucketName}.s3.${awsS3Properties.region}.amazonaws.com/$fileName"
         } catch (e: Exception) {
             throw RuntimeException("Erro ao fazer upload para o S3: ${e.message}")
         }
+    }
+
+    fun uploadUserPhoto(userId: Long, file: MultipartFile): String {
+        val prefix = "users/$userId"
+        clearObjectsByPrefix(prefix)
+        return uploadFile(prefix, file)
     }
 
     fun clearObjectsByPrefix(prefix: String) {
