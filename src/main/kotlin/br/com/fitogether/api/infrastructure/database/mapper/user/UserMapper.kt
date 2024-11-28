@@ -1,13 +1,14 @@
-package br.com.fitogether.api.data.mapper.user
+package br.com.fitogether.api.infrastructure.database.mapper.user
 
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
 import br.com.fitogether.api.core.extension.formatDate
-import br.com.fitogether.api.data.entity.user.UserEntity
-import br.com.fitogether.api.data.mapper.exercise.toModel
-import br.com.fitogether.api.data.mapper.experience.toModel
-import br.com.fitogether.api.data.mapper.gender.toModel
-import br.com.fitogether.api.data.mapper.goal.toModel
-import br.com.fitogether.api.data.mapper.preference.toModel
+import br.com.fitogether.api.infrastructure.database.entity.user.UserEntity
+import br.com.fitogether.api.infrastructure.database.mapper.exercise.toModel
+import br.com.fitogether.api.infrastructure.database.mapper.experience.toModel
+import br.com.fitogether.api.infrastructure.database.mapper.gender.toModel
+import br.com.fitogether.api.infrastructure.database.mapper.goal.toModel
+import br.com.fitogether.api.infrastructure.database.mapper.gym.toModel
+import br.com.fitogether.api.infrastructure.database.mapper.preference.toModel
 import br.com.fitogether.api.domain.dto.request.user.CreateUserRequest
 import br.com.fitogether.api.domain.dto.response.AuthenticationResponse
 import br.com.fitogether.api.domain.dto.response.UserResponse
@@ -32,10 +33,11 @@ fun UserEntity.toModel() = User(
     username = this.username,
     email = this.email,
     registrationStep = this.registrationStep,
-    photo = this.photo,
+    registrationStatus = this.registrationStatus,
     goals = this.goals.map { it.toModel() },
     exercises = this.exercises.map { it.toModel() },
     experience = this.experience?.toModel()?.name,
+    gyms = this.gyms.map { it.toModel() },
     preferences = this.preferences?.toModel()
 )
 
@@ -45,12 +47,13 @@ fun User.toUserResponse() = UserResponse(
     name = this.name,
     username = this.username,
     registrationStep = this.registrationStep,
-    photo = this.photo,
+    registrationStatus = this.registrationStatus,
     gender = this.gender,
     goals = this.goals,
     exercises = this.exercises,
     experience = this.experience,
-    preference = this.preferences
+    gyms = this.gyms,
+    preferences = this.preferences
 )
 
 fun CreateUserRequest.toEntity() = UserEntity(

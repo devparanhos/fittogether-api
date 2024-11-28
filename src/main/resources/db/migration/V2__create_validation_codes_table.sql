@@ -4,7 +4,5 @@ CREATE TABLE validation_codes (
     validated BOOLEAN NOT NULL,
     code INT NOT NULL,
     duration INT NOT NULL DEFAULT 90,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL,
-    deleted_at TIMESTAMP NULL
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

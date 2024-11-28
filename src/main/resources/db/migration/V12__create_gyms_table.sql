@@ -1,9 +1,0 @@
-CREATE TABLE IF NOT EXISTS gyms(
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    address_id BIGINT NULL,
-    name VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL,
-    deleted_at TIMESTAMP NULL,
-    CONSTRAINT fk_gyms_address_id FOREIGN KEY (address_id) REFERENCES addresses(id)
-)

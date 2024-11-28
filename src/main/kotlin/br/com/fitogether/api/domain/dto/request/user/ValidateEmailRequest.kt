@@ -1,11 +1,10 @@
 package br.com.fitogether.api.domain.dto.request.user
 
 import jakarta.validation.constraints.Email
-import jakarta.validation.constraints.NotBlank
-import org.jetbrains.annotations.NotNull
+import jakarta.validation.constraints.NotEmpty
 
 class ValidateEmailRequest(
-    @field:NotBlank(message = "O campo email é obrigatório.")
-    @field:Email(message = "O e-mail informado é inválido.")
+    @field:NotEmpty(message = "O e-mail não pode ser vazio")
+    @field:Email(message = "O e-mail informado não é válido")
     val email: String
 )
