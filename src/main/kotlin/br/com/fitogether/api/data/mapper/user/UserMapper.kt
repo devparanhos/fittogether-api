@@ -13,6 +13,7 @@ import br.com.fitogether.api.domain.dto.response.AuthenticationResponse
 import br.com.fitogether.api.domain.dto.response.UserResponse
 import br.com.fitogether.api.domain.dto.response.ValidateEmailResponse
 import br.com.fitogether.api.domain.model.user.User
+import kotlin.concurrent.thread
 
 fun UserEntity?.toValidateEmailResponse() = ValidateEmailResponse(
     status = this?.registrationStatus ?: UserRegistrationStatus.NOT_FOUND,
@@ -36,7 +37,8 @@ fun UserEntity.toModel() = User(
     goals = this.goals.map { it.toModel() },
     exercises = this.exercises.map { it.toModel() },
     experience = this.experience?.toModel()?.name,
-    preferences = this.preferences?.toModel()
+    preferences = this.preferences?.toModel(),
+    registrationStatus = this.registrationStatus
 )
 
 fun User.toUserResponse() = UserResponse(
@@ -50,7 +52,8 @@ fun User.toUserResponse() = UserResponse(
     goals = this.goals,
     exercises = this.exercises,
     experience = this.experience,
-    preference = this.preferences
+    preference = this.preferences,
+    registrationStatus = this.registrationStatus
 )
 
 fun CreateUserRequest.toEntity() = UserEntity(

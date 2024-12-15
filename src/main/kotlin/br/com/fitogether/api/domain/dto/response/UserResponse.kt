@@ -1,6 +1,7 @@
 package br.com.fitogether.api.domain.dto.response
 
 import br.com.fitogether.api.core.enums.RegistrationStep
+import br.com.fitogether.api.core.enums.UserRegistrationStatus
 import br.com.fitogether.api.domain.model.exercise.Exercise
 import br.com.fitogether.api.domain.model.goal.Goal
 import br.com.fitogether.api.domain.model.preference.Preference
@@ -38,5 +39,8 @@ data class UserResponse(
     val experience: String?,
 
     @field:JsonProperty("preference")
-    val preference: Preference?
+    val preference: Preference?,
+
+    @field:JsonProperty("registration_status")
+    val registrationStatus: UserRegistrationStatus
 )
