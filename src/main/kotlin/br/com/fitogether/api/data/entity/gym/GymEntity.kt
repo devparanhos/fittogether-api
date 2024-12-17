@@ -1,6 +1,7 @@
 package br.com.fitogether.api.data.entity.gym
 
 import br.com.fitogether.api.data.entity.address.AddressEntity
+import br.com.fitogether.api.data.entity.exercise.ExerciseEntity
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -25,4 +26,12 @@ data class GymEntity(
 
     @Column(name = "deleted_at")
     var deletedAt: LocalDateTime? = null,
+
+    @OneToMany
+    @JoinTable(
+        name = "gym_exercises",
+        joinColumns = [JoinColumn(name = "exercise_id", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "gym_id", referencedColumnName = "id")]
+    )
+    val exercises: MutableSet<ExerciseEntity> = mutableSetOf(),
 )

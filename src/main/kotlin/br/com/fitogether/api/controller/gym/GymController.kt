@@ -1,5 +1,6 @@
 package br.com.fitogether.api.controller.gym
 
+import br.com.fitogether.api.controller.base.BaseController
 import br.com.fitogether.api.domain.dto.request.gym.GetGymsRequest
 import br.com.fitogether.api.domain.dto.response.GymResponse
 import br.com.fitogether.api.domain.service.gym.GymService
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/gym")
 class GymController(
     private val gymService: GymService
-) {
+): BaseController() {
     @Operation(summary = "Retorna lista de academias próximas")
     @ApiResponses(
         value = [

@@ -1,0 +1,2 @@
+ALTER TABLE user
+ADD COLUMN `level` INT NOT NULL DEFAULT 0 AFTER `experience_id`;
