@@ -10,6 +10,7 @@ import br.com.fitogether.api.data.entity.goal.GoalEntity
 import br.com.fitogether.api.data.entity.preference.PreferenceEntity
 
 import jakarta.persistence.*
+import org.hibernate.annotations.Formula
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
@@ -86,7 +87,20 @@ data class UserEntity(
     @Column(name = "photo", nullable = false)
     val photo: String = "",
 
-    ) : UserDetails {
+    @Column(nullable = false)
+    val level: Int? = null,
+
+    @Formula(
+        """
+        (SELECT l.description 
+         FROM level l 
+         WHERE l.min <= level AND l.max >= level 
+         LIMIT 1)
+        """
+    )
+    val levelDescription: String? = null
+
+) : UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return mutableListOf()
     }

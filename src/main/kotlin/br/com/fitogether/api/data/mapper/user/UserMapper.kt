@@ -12,6 +12,7 @@ import br.com.fitogether.api.domain.dto.request.user.CreateUserRequest
 import br.com.fitogether.api.domain.dto.response.AuthenticationResponse
 import br.com.fitogether.api.domain.dto.response.UserResponse
 import br.com.fitogether.api.domain.dto.response.ValidateEmailResponse
+import br.com.fitogether.api.domain.model.user.Profile
 import br.com.fitogether.api.domain.model.user.User
 import kotlin.concurrent.thread
 
@@ -41,6 +42,15 @@ fun UserEntity.toModel() = User(
     registrationStatus = this.registrationStatus
 )
 
+fun UserEntity.toProfileModel() = Profile(
+    id = this.id,
+    name = this.name,
+    username = this.username,
+    email = this.email,
+    photo = this.photo,
+    level = this.levelDescription
+)
+
 fun User.toUserResponse() = UserResponse(
     id = this.id,
     email = this.email,
@@ -61,6 +71,5 @@ fun CreateUserRequest.toEntity() = UserEntity(
     password = this.password,
     cellphone = this.cellphone,
     name = this.name,
-    birthDate = this.birthDate.formatDate(),
-    username = this.username
+    birthDate = this.birthDate.formatDate()
 )

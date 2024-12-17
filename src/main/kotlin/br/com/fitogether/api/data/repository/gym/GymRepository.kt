@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
-interface GymRepository: JpaRepository<GymEntity, Long> {
+interface GymRepository : JpaRepository<GymEntity, Long> {
     @Query(
         """
         SELECT g FROM gyms g 
@@ -20,5 +20,24 @@ interface GymRepository: JpaRepository<GymEntity, Long> {
         @Param("lat") lat: Double,
         @Param("lng") lng: Double,
         @Param("radius") radius: Double
+    ): List<GymEntity>
+
+    @Query(
+        """
+        SELECT g FROM gyms g 
+        JOIN g.address a
+        JOIN g.exercises e
+        WHERE ST_Distance_Sphere(
+            a.coordinates,
+            ST_GeomFromText(CONCAT('POINT(', :lng, ' ', :lat, ')'))
+        ) <= :radius
+        AND e.id IN :exercises
+        """
+    )
+    fun findGymsWithinLatLngAndExercise(
+        @Param("lat") lat: Double,
+        @Param("lng") lng: Double,
+        @Param("radius") radius: Double,
+        @Param("exercises") exercises: List<String>
     ): List<GymEntity>
 }
