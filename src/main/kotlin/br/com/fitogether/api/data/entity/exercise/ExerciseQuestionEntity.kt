@@ -13,7 +13,7 @@ data class ExerciseQuestionEntity(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exercise_id", nullable = false)
-    val exercise: ExerciseEntity,
+    val exercise: ExerciseEntity? = null,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -32,5 +32,5 @@ data class ExerciseQuestionEntity(
     var deletedAt: LocalDateTime? = null,
 
     @OneToMany(mappedBy = "exerciseQuestion", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val options: MutableList<ExerciseQuestionOptionEntity> = mutableListOf()
+    val options: MutableList<ExerciseQuestionOptionEntity?> = mutableListOf()
 )

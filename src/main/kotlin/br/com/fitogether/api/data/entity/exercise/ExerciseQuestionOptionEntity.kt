@@ -12,7 +12,7 @@ data class ExerciseQuestionOptionEntity(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exercise_question_id", nullable = false)
-    val exerciseQuestion: ExerciseQuestionEntity,
+    val exerciseQuestion: ExerciseQuestionEntity? = null,
 
     @Column(columnDefinition = "TEXT", nullable = false)
     val description: String? = null,
