@@ -2,9 +2,12 @@ package br.com.fitogether.api.controller.exercises
 
 import br.com.fitogether.api.data.entity.user.UserEntity
 import br.com.fitogether.api.domain.dto.request.exercise.ExercisePoolRequest
+import br.com.fitogether.api.domain.dto.response.MessageResponse
 import br.com.fitogether.api.domain.dto.response.exercise.ExerciseQuestionsResponse
 import br.com.fitogether.api.domain.service.exercise.ExerciseService
 import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -31,7 +34,8 @@ class ExerciseController(
         @AuthenticationPrincipal user: UserEntity,
         @PathVariable("exerciseId") exerciseId: Long,
         @RequestBody @Valid exercisePoolRequest: ExercisePoolRequest,
-    ) {
-        return exerciseService.createExercisePool(user, exerciseId, exercisePoolRequest)
+    ): ResponseEntity<MessageResponse> {
+        exerciseService.createExercisePool(user, exerciseId, exercisePoolRequest)
+        return ResponseEntity.status(HttpStatus.CREATED).body(MessageResponse("Questionário salvo com sucesso"))
     }
 }
