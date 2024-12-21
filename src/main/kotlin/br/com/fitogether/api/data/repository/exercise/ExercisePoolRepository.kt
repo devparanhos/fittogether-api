@@ -8,8 +8,6 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
 interface ExercisePoolRepository : JpaRepository<ExercisePoolEntity, Long> {
-    fun findByUserAndExercise(user: UserEntity, exercise: ExerciseEntity): List<ExercisePoolEntity?>
-
     @Query(
         """
         SELECT e FROM exercise_pool e 

@@ -33,7 +33,7 @@ class ExerciseService(
                 RuleException(HttpStatus.NOT_FOUND, "Exercício não encontrado")
             }
 
-            val questions = exerciseQuestionRepository.findByExerciseId(exerciseId);
+            val questions = exerciseQuestionRepository.findByExerciseId(exerciseId)
             if (questions.isEmpty()) {
                 throw RuleException(HttpStatus.NOT_FOUND, "Questões não encontradas")
             }
@@ -52,7 +52,7 @@ class ExerciseService(
                 RuleException(HttpStatus.NOT_FOUND, "Exercício não encontrado")
             }
 
-            val questions = exerciseQuestionRepository.findByExerciseId(exerciseId);
+            val questions = exerciseQuestionRepository.findByExerciseId(exerciseId)
             if (questions.isEmpty()) {
                 throw RuleException(HttpStatus.NOT_FOUND, "Questões não encontradas")
             }
@@ -61,9 +61,7 @@ class ExerciseService(
             val validOptions = questions.flatMap { it.options.filterNotNull() }.map { it.id }.toSet()
 
             // Valida se todas as opções enviadas no request são válidas
-            val invalidOptions = exercisePoolRequest.questions
-                .map { it.toLong() }
-                .filter { it !in validOptions }
+            val invalidOptions = exercisePoolRequest.questions.map { it.toLong() }.filter { it !in validOptions }
 
             if (invalidOptions.isNotEmpty()) {
                 throw RuleException(
