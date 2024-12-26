@@ -1,6 +1,7 @@
 package br.com.fitogether.api.config.filter
 
 import br.com.fitogether.api.core.enums.GeneralError
+import br.com.fitogether.api.core.exception.custom.RuleException
 import br.com.fitogether.api.core.exception.global.GlobalException
 import br.com.fitogether.api.data.repository.user.UserRepository
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -36,7 +37,9 @@ class JwtAuthenticationFilter(
             try {
                 val jwt = jwtDecoder.decode(token)
                 val username = jwt.subject
-                val user = userRepository.findByUsername(username)
+                val user = userRepository.findByUsername(username).orElseThrow {
+                    RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado.")
+                }
 
                 user?.let {
                     if (it.accessToken == token) {

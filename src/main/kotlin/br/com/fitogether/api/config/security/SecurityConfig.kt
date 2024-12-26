@@ -37,7 +37,7 @@ class SecurityConfig(
     @Value("\${security.jwt.private-key}")
     private lateinit var privateKey : RSAPrivateKey
 
-    private val publicPostEndpoints = arrayOf("/users", "users/validate-email", "/users/validate-code", "users/login")
+    private val publicPostEndpoints = arrayOf("/users", "users/validate-email", "/users/validate-code", "users/login", "users/forgot-password", "users/password-reset")
     private val publicGetEndpoints = arrayOf("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
 
     @Bean

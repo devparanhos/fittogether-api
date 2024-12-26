@@ -25,4 +25,20 @@ class EmailService(
             throw e
         }
     }
+
+    @Throws(MessagingException::class)
+    fun sendPasswordResetEmail(to: String, token: String) {
+        try {
+
+            val message = SimpleMailMessage().apply {
+                setTo(to)
+                subject = "Redefinição de senha - Fit Together"
+                text = "fittogether://password-reset?token=$token"
+            }
+
+            mailSender.send(message)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
 }
