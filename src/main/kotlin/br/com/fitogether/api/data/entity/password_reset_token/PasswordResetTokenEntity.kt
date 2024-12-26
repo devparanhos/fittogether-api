@@ -2,10 +2,6 @@ package br.com.fitogether.api.data.entity.password_reset_token
 
 import br.com.fitogether.api.data.entity.user.UserEntity
 import jakarta.persistence.*
-import org.hibernate.annotations.Filter
-import org.hibernate.annotations.FilterDef
-import org.hibernate.annotations.ParamDef
-import org.hibernate.annotations.SQLDelete
 import java.time.LocalDateTime
 
 @Entity
