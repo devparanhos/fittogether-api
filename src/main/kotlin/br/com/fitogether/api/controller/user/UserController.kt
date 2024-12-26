@@ -52,7 +52,7 @@ class UserController(
 
     @PostMapping(value = ["/password-reset"])
     fun passwordReset(@RequestBody @Valid request: PasswordResetRequest): ResponseEntity<MessageResponse> {
-        userService.passwordReset(request.token, request.newPassword)
+        userService.passwordReset(request.token, request.password)
         return ResponseEntity.ok(MessageResponse("Senha redefinida com sucesso"))
     }
 }

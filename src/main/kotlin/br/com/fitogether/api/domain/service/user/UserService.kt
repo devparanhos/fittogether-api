@@ -359,7 +359,7 @@ class UserService(
         }
     }
 
-    fun passwordReset(token: String, newPassword: String) {
+    fun passwordReset(token: String, password: String) {
         try {
             val resetToken = passwordResetTokenRepository.findByToken(token)
                 .orElseThrow { RuleException(HttpStatus.NOT_FOUND, "Token inválido ou expirado") }
@@ -371,7 +371,7 @@ class UserService(
 
             // Atualiza a senha do usuário
             userRepository.save(
-                resetToken.user.copy(password = bCryptPasswordEncoder.encode(newPassword))
+                resetToken.user.copy(password = bCryptPasswordEncoder.encode(password))
             )
             // Remove o token após a redefinição
             passwordResetTokenRepository.delete(resetToken)
