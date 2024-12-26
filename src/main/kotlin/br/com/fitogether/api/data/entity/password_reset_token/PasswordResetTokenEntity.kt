@@ -10,9 +10,6 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "password_reset_tokens")
-@SQLDelete(sql = "UPDATE password_reset_tokens SET deleted_at = NOW() WHERE id = ?")
-@FilterDef(name = "deletedFilter", parameters = [ParamDef(name = "isDeleted", type = Boolean::class)])
-@Filter(name = "deletedFilter", condition = "deleted_at IS NULL")
 data class PasswordResetTokenEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
