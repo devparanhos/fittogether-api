@@ -9,6 +9,6 @@ class UsernameAvailableValidator(
     private val userService: UserService
 ) : ConstraintValidator<UsernameAvailable, String> {
     override fun isValid(username: String, p1: ConstraintValidatorContext?): Boolean {
-        return userService.isUsernameAvailable(username = username)
+        return userService.isUsernameAvailable(username = username) == null
     }
 }

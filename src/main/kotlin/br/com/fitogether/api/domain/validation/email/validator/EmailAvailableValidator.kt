@@ -10,6 +10,6 @@ class EmailAvailableValidator(
     @Autowired private val userService: UserService
 ) : ConstraintValidator<EmailAvailable, String> {
     override fun isValid(data: String, p1: ConstraintValidatorContext?): Boolean {
-        return userService.isEmailAvailable(email = data)
+        return userService.isEmailAvailable(email = data) == null
     }
 }

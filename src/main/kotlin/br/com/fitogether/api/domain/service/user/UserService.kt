@@ -6,7 +6,7 @@ import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
 import br.com.fitogether.api.core.exception.custom.RuleException
 import br.com.fitogether.api.core.exception.custom.ValidateCodeException
-import br.com.fitogether.api.data.entity.gender.GenderEntity
+import br.com.fitogether.api.data.entity.password_reset_token.PasswordResetTokenEntity
 import br.com.fitogether.api.data.entity.preference.PreferenceEntity
 import br.com.fitogether.api.data.entity.preference.PreferenceScheduleEntity
 import br.com.fitogether.api.data.entity.user.UserEntity
@@ -18,6 +18,7 @@ import br.com.fitogether.api.data.repository.experience.ExperienceRepository
 import br.com.fitogether.api.data.repository.gender.GenderRepository
 import br.com.fitogether.api.data.repository.goal.GoalRepository
 import br.com.fitogether.api.data.repository.gym.GymRepository
+import br.com.fitogether.api.data.repository.password_reset_token.PasswordResetTokenRepository
 import br.com.fitogether.api.data.repository.preference.PreferenceRepository
 import br.com.fitogether.api.data.repository.preference.PreferenceScheduleRepository
 import br.com.fitogether.api.data.repository.user.UserRepository
@@ -34,15 +35,15 @@ import br.com.fitogether.api.domain.model.exercise.Exercise
 import br.com.fitogether.api.domain.model.goal.Goal
 import br.com.fitogether.api.domain.service.aws.S3Service
 import br.com.fitogether.api.domain.service.code.ValidationCodeService
+import br.com.fitogether.api.domain.service.email.EmailService
 import jakarta.transaction.Transactional
-import org.springframework.cglib.core.Local
 import org.springframework.http.HttpStatus
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDateTime
-import java.time.LocalTime
+import java.util.*
 import javax.security.auth.login.LoginException
 
 @Service
@@ -56,18 +57,22 @@ class UserService(
     private val preferenceRepository: PreferenceRepository,
     private val preferenceScheduleRepository: PreferenceScheduleRepository,
     private val validationCodeRepository: ValidationCodeRepository,
+    private val passwordResetTokenRepository: PasswordResetTokenRepository,
     private val gymRepository: GymRepository,
     private val validationCodeService: ValidationCodeService,
+    private val emailService: EmailService,
     private val s3Service: S3Service,
     private val bCryptPasswordEncoder: BCryptPasswordEncoder,
     private val securityConfig: SecurityConfig
 ) {
     fun validateEmail(request: ValidateEmailRequest): ValidateEmailResponse {
         try {
-            val user = userRepository.findByEmail(request.email)
+            val user = userRepository.findByEmail(request.email).orElseThrow {
+                RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado.")
+            }
             val validationCode = validationCodeRepository.findByEmail(request.email)
 
-            if (user?.registrationStatus != UserRegistrationStatus.CONCLUDED && validationCode?.validated != true) {
+            if (user.registrationStatus != UserRegistrationStatus.CONCLUDED && validationCode?.validated != true) {
                 validationCodeService.setValidationCode(email = request.email)
             }
 
@@ -78,92 +83,142 @@ class UserService(
     }
 
     fun validateCode(request: ValidateCodeRequest): ValidateCodeResponse {
-        if (validationCodeService.validateCode(request = request)) {
-            val user = userRepository.findByEmail(request.email)
-            return ValidateCodeResponse(
-                userId = user?.id, registrationStep = user?.registrationStep ?: RegistrationStep.START
-            )
-        } else {
-            throw ValidateCodeException(
-                message = GeneralError.EV003.message, internalCode = GeneralError.EV003.code
-            )
+        try {
+            if (validationCodeService.validateCode(request = request)) {
+                val user = userRepository.findByEmail(request.email).orElseThrow {
+                    RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado.")
+                }
+                return ValidateCodeResponse(
+                    userId = user.id, registrationStep = user.registrationStep
+                )
+            } else {
+                throw ValidateCodeException(
+                    message = GeneralError.EV003.message, internalCode = GeneralError.EV003.code
+                )
+            }
+        } catch (exception: Exception) {
+            throw exception
         }
     }
 
     fun createUser(request: CreateUserRequest): AuthenticationResponse {
-        val user = userRepository.save(
-            request.copy(
-                password = bCryptPasswordEncoder.encode(request.password),
-            ).toEntity()
-        )
+        try {
+            val user = userRepository.save(
+                request.copy(
+                    password = bCryptPasswordEncoder.encode(request.password),
+                ).toEntity()
+            )
 
-        return setUserAccessToken(userEntity = user)
+            return setUserAccessToken(userEntity = user)
+        } catch (exception: Exception) {
+            throw exception
+        }
     }
 
     fun setUserAccessToken(userEntity: UserEntity): AuthenticationResponse {
-        return userRepository.save(
-            userEntity.copy(
-                accessToken = securityConfig.generateToken(user = userEntity)
-            )
-        ).toAuthenticationResponse()
+        try {
+            return userRepository.save(
+                userEntity.copy(
+                    accessToken = securityConfig.generateToken(user = userEntity)
+                )
+            ).toAuthenticationResponse()
+        } catch (exception: Exception) {
+            throw exception
+        }
     }
 
-    fun isEmailAvailable(email: String): Boolean {
-        return userRepository.findByEmail(email) == null
+    fun isEmailAvailable(email: String): UserEntity? {
+        try {
+            return userRepository.findByEmail(email = email).orElseThrow {
+                RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado.")
+            }
+        } catch (exception: Exception) {
+            throw exception
+        }
     }
 
     fun authenticate(login: LoginRequest): AuthenticationResponse {
-        userRepository.findByEmail(email = login.email)?.let {
-            if (bCryptPasswordEncoder.matches(login.password, it.password)) {
-                return setUserAccessToken(userEntity = it)
+        try {
+            val user = userRepository.findByEmail(email = login.email).orElseThrow {
+                RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado.")
+            }
+
+            if (bCryptPasswordEncoder.matches(login.password, user.password)) {
+                return setUserAccessToken(userEntity = user)
             } else {
                 throw LoginException(GeneralError.EAUTH001.message)
             }
-        } ?: throw LoginException(GeneralError.EAUTH001.message)
+        } catch (exception: Exception) {
+            throw exception
+        }
     }
 
-    fun isUsernameAvailable(username: String): Boolean {
-        return userRepository.findByUsername(username = username) == null
+    fun isUsernameAvailable(username: String): UserEntity? {
+        try {
+            return userRepository.findByUsername(username = username).orElseThrow {
+                RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado.")
+            }
+        } catch (exception: Exception) {
+            throw exception
+        }
     }
 
     fun updateGender(genderId: Long, userId: Long): UserResponse {
-        val user = userRepository.findById(userId).orElseThrow()
-        val gender = genderRepository.findById(genderId).orElseThrow()
-        return userRepository.save(
-            user.copy(gender = gender, registrationStep = RegistrationStep.GOALS)
-        ).toModel().toUserResponse()
+        try {
+            val user = userRepository.findById(userId).orElseThrow()
+            val gender = genderRepository.findById(genderId).orElseThrow()
+            return userRepository.save(
+                user.copy(gender = gender, registrationStep = RegistrationStep.GOALS)
+            ).toModel().toUserResponse()
+        } catch (exception: Exception) {
+            throw exception
+        }
     }
 
     fun setUserGoals(userId: Long, goals: List<Goal>): UserResponse {
-        val user = userRepository.findById(userId).orElseThrow()
-        val goalsEntity = goalRepository.findAllById(goals.map { it.id }).toMutableSet()
+        try {
+            val user = userRepository.findById(userId).orElseThrow()
+            val goalsEntity = goalRepository.findAllById(goals.map { it.id }).toMutableSet()
 
-        user.goals.addAll(goalsEntity)
+            user.goals.addAll(goalsEntity)
 
-        return userRepository.save(
-            user.copy(registrationStep = RegistrationStep.EXERCISES)
-        ).toModel().toUserResponse()
+            return userRepository.save(
+                user.copy(registrationStep = RegistrationStep.EXERCISES)
+            ).toModel().toUserResponse()
+        } catch (exception: Exception) {
+            throw exception
+        }
     }
 
     fun setUserExercises(userId: Long, exercises: List<Exercise>): UserResponse {
-        val user = userRepository.findById(userId).orElseThrow()
-        val exerciseEntity = exerciseRepository.findAllById(exercises.map { it.id }).toMutableSet()
+        try {
+            val user = userRepository.findById(userId).orElseThrow()
+            val exerciseEntity = exerciseRepository.findAllById(exercises.map { it.id }).toMutableSet()
 
-        user.exercises.addAll(exerciseEntity)
+            user.exercises.addAll(exerciseEntity)
 
-        return userRepository.save(
-            user.copy(registrationStep = RegistrationStep.EXPERIENCE)
-        ).toModel().toUserResponse()
+            return userRepository.save(
+                user.copy(registrationStep = RegistrationStep.EXPERIENCE)
+            ).toModel().toUserResponse()
+        } catch (exception: Exception) {
+            throw exception
+        }
     }
 
 
     fun setUserExperience(userId: Long, experienceId: Long): UserResponse {
-        val user = userRepository.findById(userId).orElseThrow()
-        val experienceEntity = experienceRepository.findById(experienceId).orElseThrow()
+        try {
+            val user = userRepository.findById(userId).orElseThrow {
+                RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado.")
+            }
+            val experienceEntity = experienceRepository.findById(experienceId).orElseThrow()
 
-        return userRepository.save(
-            user.copy(experience = experienceEntity, registrationStep = RegistrationStep.PREFERENCES)
-        ).toModel().toUserResponse()
+            return userRepository.save(
+                user.copy(experience = experienceEntity, registrationStep = RegistrationStep.PREFERENCES)
+            ).toModel().toUserResponse()
+        } catch (exception: Exception) {
+            throw exception
+        }
     }
 
     fun setUserPreferences(userId: Long, preferences: PreferencesRequest): UserResponse {
@@ -271,6 +326,55 @@ class UserService(
                 user.copy(photo = photoUrl)
             ).toModel().toUserResponse()
 
+        } catch (exception: Exception) {
+            throw exception
+        }
+    }
+
+    fun forgotPassword(email: String) {
+        try {
+            val user = userRepository.findByEmail(email).orElseThrow {
+                RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado.")
+            }
+
+            // Gera um token único e define validade de 1 hora
+            val token = UUID.randomUUID().toString()
+            val expirationTime = LocalDateTime.now().plusHours(1)
+
+            // Remove tokens antigos do usuário, se existirem
+            passwordResetTokenRepository.deleteByUser(user)
+
+            // Cria um novo token
+            val passwordResetToken = PasswordResetTokenEntity(
+                user = user,
+                token = token,
+                expiresAt = expirationTime
+            )
+            passwordResetTokenRepository.save(passwordResetToken)
+
+            // Envia e-mail com o link de redefinição
+            emailService.sendPasswordResetEmail(user.email, token)
+        } catch (exception: Exception) {
+            throw exception
+        }
+    }
+
+    fun passwordReset(token: String, newPassword: String) {
+        try {
+            val resetToken = passwordResetTokenRepository.findByToken(token)
+                .orElseThrow { RuleException(HttpStatus.NOT_FOUND, "Token inválido ou expirado") }
+
+            // Verifica se o token ainda é válido
+            if (resetToken.expiresAt.isBefore(LocalDateTime.now())) {
+                throw RuleException(HttpStatus.BAD_REQUEST, "Token expirado")
+            }
+
+            // Atualiza a senha do usuário
+            userRepository.save(
+                resetToken.user.copy(password = bCryptPasswordEncoder.encode(newPassword))
+            )
+            // Remove o token após a redefinição
+            passwordResetTokenRepository.delete(resetToken)
         } catch (exception: Exception) {
             throw exception
         }

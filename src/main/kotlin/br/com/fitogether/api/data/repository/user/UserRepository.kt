@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.Query
 import java.util.*
 
 interface UserRepository : JpaRepository<UserEntity, Long> {
-    fun findByEmail(email: String): UserEntity?
-    fun findByUsername(username: String): UserEntity?
+    fun findByEmail(email: String): Optional<UserEntity>
+    fun findByUsername(username: String): Optional<UserEntity>
 }
