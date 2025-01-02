@@ -163,9 +163,8 @@ class UserService(
         }
     }
 
-    fun updateGender(genderId: Long, userId: Long): UserResponse {
+    fun updateGender(genderId: Long, user: UserEntity): UserResponse {
         try {
-            val user = userRepository.findById(userId).orElseThrow()
             val gender = genderRepository.findById(genderId).orElseThrow()
             return userRepository.save(
                 user.copy(gender = gender, registrationStep = RegistrationStep.GOALS)

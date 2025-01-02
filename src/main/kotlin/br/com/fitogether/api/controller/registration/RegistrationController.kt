@@ -2,6 +2,7 @@ package br.com.fitogether.api.controller.registration
 
 import br.com.fitogether.api.controller.base.BaseController
 import br.com.fitogether.api.core.exception.custom.RuleException
+import br.com.fitogether.api.data.entity.user.UserEntity
 import br.com.fitogether.api.domain.dto.request.registration.ExerciseRequest
 import br.com.fitogether.api.domain.dto.request.registration.ExperienceRequest
 import br.com.fitogether.api.domain.dto.request.registration.GenderRequest
@@ -19,6 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
@@ -36,17 +38,12 @@ class RegistrationController(
         }
     }
 
-    @PostMapping(value = ["{userId}/gender"])
+    @PostMapping(value = ["/gender"])
     fun setGender(
-        @PathVariable("userId") userId: Long,
+        @AuthenticationPrincipal user: UserEntity,
         @RequestBody @Valid genderRequest: GenderRequest
     ): UserResponse {
-        return execute(
-            userId = userId,
-            useCase = {
-                userService.updateGender(genderId = genderRequest.genderId, userId = userId)
-            }
-        )
+        return userService.updateGender(genderId = genderRequest.genderId, user = user)
     }
 
     @GetMapping(value = ["/screen/goals"])
