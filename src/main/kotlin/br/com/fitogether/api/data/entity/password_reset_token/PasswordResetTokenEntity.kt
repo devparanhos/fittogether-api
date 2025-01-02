@@ -2,17 +2,10 @@ package br.com.fitogether.api.data.entity.password_reset_token
 
 import br.com.fitogether.api.data.entity.user.UserEntity
 import jakarta.persistence.*
-import org.hibernate.annotations.Filter
-import org.hibernate.annotations.FilterDef
-import org.hibernate.annotations.ParamDef
-import org.hibernate.annotations.SQLDelete
 import java.time.LocalDateTime
 
 @Entity
 @Table(name = "password_reset_tokens")
-@SQLDelete(sql = "UPDATE password_reset_tokens SET deleted_at = NOW() WHERE id = ?")
-@FilterDef(name = "deletedFilter", parameters = [ParamDef(name = "isDeleted", type = Boolean::class)])
-@Filter(name = "deletedFilter", condition = "deleted_at IS NULL")
 data class PasswordResetTokenEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
