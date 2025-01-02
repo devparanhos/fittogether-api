@@ -1,6 +1,7 @@
 package br.com.fitogether.api.controller.registration
 
 import br.com.fitogether.api.controller.base.BaseController
+import br.com.fitogether.api.core.enums.GeneralError
 import br.com.fitogether.api.core.exception.custom.RuleException
 import br.com.fitogether.api.data.entity.user.UserEntity
 import br.com.fitogether.api.domain.dto.request.registration.ExerciseRequest
@@ -43,7 +44,8 @@ class RegistrationController(
         @AuthenticationPrincipal user: UserEntity,
         @RequestBody @Valid genderRequest: GenderRequest
     ): UserResponse {
-        return userService.updateGender(genderId = genderRequest.genderId, user = user)
+        val userId = requireNotNull(user.id) { GeneralError.EAUTH001.message }
+        return userService.updateGender(genderId = genderRequest.genderId, userId = userId)
     }
 
     @GetMapping(value = ["/screen/goals"])
@@ -55,17 +57,13 @@ class RegistrationController(
         )
     }
 
-    @PostMapping(value = ["{userId}/goals"])
+    @PostMapping(value = ["/goals"])
     fun setGoals(
-        @PathVariable("userId") userId: Long,
+        @AuthenticationPrincipal user: UserEntity,
         @RequestBody goalsRequest: GoalRequest
     ): UserResponse {
-        return execute(
-            userId = userId,
-            useCase = {
-                userService.setUserGoals(userId = userId, goals = goalsRequest.goals)
-            }
-        )
+        val userId = requireNotNull(user.id) { GeneralError.EAUTH001.message }
+        return userService.setUserGoals(userId = userId, goals = goalsRequest.goals)
     }
 
     @GetMapping(value = ["/screen/exercises"])
