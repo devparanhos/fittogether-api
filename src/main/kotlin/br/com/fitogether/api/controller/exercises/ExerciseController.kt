@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 class ExerciseController(
     private val exerciseService: ExerciseService
 ) {
-    @GetMapping(value = ["{exerciseId}/questions"])
+    @GetMapping("{exerciseId}/questions")
     fun getExerciseQuestions(
         @AuthenticationPrincipal userId: Long,
         @PathVariable("exerciseId") exerciseId: Long
@@ -28,7 +28,7 @@ class ExerciseController(
         return exerciseService.getExerciseQuestions(exerciseId)
     }
 
-    @PostMapping(value = ["{exerciseId}/pool"])
+    @PostMapping("{exerciseId}/pool")
     fun createExercisePool(
         @AuthenticationPrincipal userId: Long,
         @PathVariable("exerciseId") exerciseId: Long,
