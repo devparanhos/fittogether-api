@@ -198,6 +198,7 @@ class UserService(
             val user = userRepository.findById(userId).orElseThrow()
             val exerciseEntity = exerciseRepository.findAllById(exercises.map { it.id }).toMutableSet()
 
+            user.exercises.clear()
             user.exercises.addAll(exerciseEntity)
 
             return userRepository.save(

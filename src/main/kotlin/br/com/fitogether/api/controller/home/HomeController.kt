@@ -1,7 +1,6 @@
 package br.com.fitogether.api.controller.home
 
 import br.com.fitogether.api.controller.base.BaseController
-import br.com.fitogether.api.data.entity.user.UserEntity
 import br.com.fitogether.api.domain.dto.request.home.HomeScreenRequest
 import br.com.fitogether.api.domain.dto.response.home.screen.HomeScreenResponse
 import br.com.fitogether.api.domain.service.home.screen.HomeScreenService
@@ -18,11 +17,11 @@ class HomeController(
 ) : BaseController() {
     @GetMapping()
     fun getHomeScreen(
-        @AuthenticationPrincipal user: UserEntity,
+        @AuthenticationPrincipal userId: Long,
         @Valid homeScreenRequest: HomeScreenRequest
     ): HomeScreenResponse {
         return execute {
-            homeScreenService.buildHomeScreen(user, homeScreenRequest)
+            homeScreenService.buildHomeScreen(userId, homeScreenRequest)
         }
     }
 }

@@ -3,9 +3,9 @@ package br.com.fitogether.api.domain.service.exercise
 import br.com.fitogether.api.core.exception.custom.RuleException
 import br.com.fitogether.api.data.entity.exercise.ExercisePoolAnswerEntity
 import br.com.fitogether.api.data.entity.exercise.ExercisePoolEntity
-import br.com.fitogether.api.data.entity.user.UserEntity
 import br.com.fitogether.api.data.mapper.exercise.toModel
 import br.com.fitogether.api.data.repository.exercise.*
+import br.com.fitogether.api.data.repository.user.UserRepository
 import br.com.fitogether.api.domain.dto.request.exercise.ExercisePoolRequest
 import br.com.fitogether.api.domain.dto.response.exercise.ExerciseQuestionsResponse
 import br.com.fitogether.api.domain.model.exercise.Exercise
@@ -16,6 +16,7 @@ import java.time.LocalDateTime
 
 @Service
 class ExerciseService(
+    private val userRepository: UserRepository,
     private val exerciseRepository: ExerciseRepository,
     private val exerciseQuestionRepository: ExerciseQuestionRepository,
     private val exerciseQuestionOptionRepository: ExerciseQuestionOptionRepository,
@@ -46,8 +47,12 @@ class ExerciseService(
     }
 
     @Transactional
-    fun createExercisePool(user: UserEntity, exerciseId: Long, exercisePoolRequest: ExercisePoolRequest) {
+    fun createExercisePool(userId: Long, exerciseId: Long, exercisePoolRequest: ExercisePoolRequest) {
         try {
+            val user = userRepository.findById(userId).orElseThrow {
+                RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado")
+            }
+
             val exercise = exerciseRepository.findById(exerciseId).orElseThrow {
                 RuleException(HttpStatus.NOT_FOUND, "Exercício não encontrado")
             }
