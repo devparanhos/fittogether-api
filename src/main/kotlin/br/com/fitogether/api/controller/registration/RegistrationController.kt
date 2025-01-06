@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
@@ -29,90 +30,56 @@ class RegistrationController(
     private val userService: UserService,
 ) : BaseController() {
 
-    @GetMapping(value = ["screen/genders"])
+    @GetMapping("screen/genders")
     fun getGendersScreen(): GetRegistrationGenderScreenResponse {
-        return execute {
-            screenRegistrationService.buildGenderScreen()
-        }
+        return screenRegistrationService.buildGenderScreen()
     }
 
-    @PostMapping(value = ["{userId}/gender"])
+    @PostMapping("/gender")
     fun setGender(
-        @PathVariable("userId") userId: Long,
+        @AuthenticationPrincipal userId: Long,
         @RequestBody @Valid genderRequest: GenderRequest
     ): UserResponse {
-        return execute(
-            userId = userId,
-            useCase = {
-                userService.updateGender(genderId = genderRequest.genderId, userId = userId)
-            }
-        )
+        return userService.updateGender(genderId = genderRequest.genderId, userId = userId)
     }
 
-    @GetMapping(value = ["/screen/goals"])
+    @GetMapping("/screen/goals")
     fun getGoalsScreen(): GetRegistrationGoalsScreenResponse {
-        return execute(
-            useCase = {
-                screenRegistrationService.buildGoalsScreen()
-            }
-        )
+        return screenRegistrationService.buildGoalsScreen()
     }
 
-    @PostMapping(value = ["{userId}/goals"])
+    @PostMapping("/goals")
     fun setGoals(
-        @PathVariable("userId") userId: Long,
+        @AuthenticationPrincipal userId: Long,
         @RequestBody goalsRequest: GoalRequest
     ): UserResponse {
-        return execute(
-            userId = userId,
-            useCase = {
-                userService.setUserGoals(userId = userId, goals = goalsRequest.goals)
-            }
-        )
+        return userService.setUserGoals(userId = userId, goals = goalsRequest.goals)
     }
 
-    @GetMapping(value = ["/screen/exercises"])
+    @GetMapping("/screen/exercises")
     fun getExercisesScreen(): GetRegistrationExerciseScreenResponse {
-        return execute(
-            useCase = {
-                screenRegistrationService.buildExercisesScreen()
-            }
-        )
+        return screenRegistrationService.buildExercisesScreen()
     }
 
-    @PostMapping(value = ["{userId}/exercises"])
+    @PostMapping("/exercises")
     fun setExercises(
-        @PathVariable("userId") userId: Long,
+        @AuthenticationPrincipal userId: Long,
         @RequestBody exercisesRequest: ExerciseRequest
     ): UserResponse {
-        return execute(
-            userId = userId,
-            useCase = {
-                userService.setUserExercises(userId = userId, exercises = exercisesRequest.exercises)
-            }
-        )
+        return userService.setUserExercises(userId = userId, exercises = exercisesRequest.exercises)
     }
 
-    @GetMapping(value = ["/screen/experiences"])
+    @GetMapping("/screen/experiences")
     fun getExperiencesScreen(): GetRegistrationExperienceScreenResponse {
-        return execute(
-            useCase = {
-                screenRegistrationService.buildExperienceScreen()
-            }
-        )
+        return screenRegistrationService.buildExperienceScreen()
     }
 
-    @PostMapping(value = ["{userId}/experience"])
+    @PostMapping("/experience")
     fun setExperience(
-        @PathVariable("userId") userId: Long,
+        @AuthenticationPrincipal userId: Long,
         @RequestBody experienceRequest: ExperienceRequest
     ): UserResponse {
-        return execute(
-            userId = userId,
-            useCase = {
-                userService.setUserExperience(userId = userId, experienceId = experienceRequest.experienceId)
-            }
-        )
+        return userService.setUserExperience(userId = userId, experienceId = experienceRequest.experienceId)
     }
 
     @Operation(summary = "Salva as preferências de busca de parceiros")
@@ -123,17 +90,12 @@ class RegistrationController(
             ApiResponse(responseCode = "500", description = "Server internal error")
         ]
     )
-    @PostMapping(value = ["{userId}/preferences"])
+    @PostMapping("/preferences")
     fun setPreferences(
-        @PathVariable("userId") userId: Long,
+        @AuthenticationPrincipal userId: Long,
         @RequestBody preferencesRequest: PreferencesRequest
     ): UserResponse {
-        return execute(
-            userId = userId,
-            useCase = {
-                userService.setUserPreferences(userId = userId, preferences = preferencesRequest)
-            }
-        )
+        return userService.setUserPreferences(userId = userId, preferences = preferencesRequest)
     }
 
     @Operation(summary = "Atualiza as preferências de busca de parceiros")
@@ -144,22 +106,17 @@ class RegistrationController(
             ApiResponse(responseCode = "500", description = "Server internal error")
         ]
     )
-    @PutMapping(value = ["{userId}/preferences"])
+    @PutMapping("/preferences")
     fun updatePreferences(
-        @PathVariable("userId") userId: Long,
+        @AuthenticationPrincipal userId: Long,
         @RequestBody preferencesRequest: PreferencesRequest
     ): UserResponse {
-        return execute(
-            userId = userId,
-            useCase = {
-                userService.updateUserPreferences(userId = userId, preferences = preferencesRequest)
-            }
-        )
+        return userService.updateUserPreferences(userId = userId, preferences = preferencesRequest)
     }
 
-    @PostMapping(value = ["{userId}/photo"])
+    @PostMapping("/photo")
     fun uploadPhoto(
-        @PathVariable userId: Long,
+        @AuthenticationPrincipal userId: Long,
         @RequestParam("file") file: MultipartFile
     ): UserResponse {
         if (file.isEmpty) {
@@ -170,11 +127,6 @@ class RegistrationController(
             throw RuleException(HttpStatus.UNPROCESSABLE_ENTITY, "O arquivo deve ser uma imagem")
         }
 
-        return execute(
-            userId = userId,
-            useCase = {
-                userService.uploadPhoto(userId, file)
-            }
-        )
+        return userService.uploadPhoto(userId, file)
     }
 }

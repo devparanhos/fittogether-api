@@ -1,6 +1,5 @@
 package br.com.fitogether.api.controller.exercises
 
-import br.com.fitogether.api.data.entity.user.UserEntity
 import br.com.fitogether.api.domain.dto.request.exercise.ExercisePoolRequest
 import br.com.fitogether.api.domain.dto.response.MessageResponse
 import br.com.fitogether.api.domain.dto.response.exercise.ExerciseQuestionsResponse
@@ -21,21 +20,21 @@ import org.springframework.web.bind.annotation.RestController
 class ExerciseController(
     private val exerciseService: ExerciseService
 ) {
-    @GetMapping(value = ["{exerciseId}/questions"])
+    @GetMapping("{exerciseId}/questions")
     fun getExerciseQuestions(
-        @AuthenticationPrincipal user: UserEntity,
+        @AuthenticationPrincipal userId: Long,
         @PathVariable("exerciseId") exerciseId: Long
     ): ExerciseQuestionsResponse {
         return exerciseService.getExerciseQuestions(exerciseId)
     }
 
-    @PostMapping(value = ["{exerciseId}/pool"])
+    @PostMapping("{exerciseId}/pool")
     fun createExercisePool(
-        @AuthenticationPrincipal user: UserEntity,
+        @AuthenticationPrincipal userId: Long,
         @PathVariable("exerciseId") exerciseId: Long,
         @RequestBody @Valid exercisePoolRequest: ExercisePoolRequest,
     ): ResponseEntity<MessageResponse> {
-        exerciseService.createExercisePool(user, exerciseId, exercisePoolRequest)
+        exerciseService.createExercisePool(userId, exerciseId, exercisePoolRequest)
         return ResponseEntity.status(HttpStatus.CREATED).body(MessageResponse("Questionário salvo com sucesso"))
     }
 }

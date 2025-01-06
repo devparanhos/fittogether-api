@@ -165,7 +165,9 @@ class UserService(
 
     fun updateGender(genderId: Long, userId: Long): UserResponse {
         try {
-            val user = userRepository.findById(userId).orElseThrow()
+            val user = userRepository.findById(userId).orElseThrow {
+                RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado.")
+            }
             val gender = genderRepository.findById(genderId).orElseThrow()
             return userRepository.save(
                 user.copy(gender = gender, registrationStep = RegistrationStep.GOALS)
@@ -180,6 +182,7 @@ class UserService(
             val user = userRepository.findById(userId).orElseThrow()
             val goalsEntity = goalRepository.findAllById(goals.map { it.id }).toMutableSet()
 
+            user.goals.clear()
             user.goals.addAll(goalsEntity)
 
             return userRepository.save(
@@ -195,6 +198,7 @@ class UserService(
             val user = userRepository.findById(userId).orElseThrow()
             val exerciseEntity = exerciseRepository.findAllById(exercises.map { it.id }).toMutableSet()
 
+            user.exercises.clear()
             user.exercises.addAll(exerciseEntity)
 
             return userRepository.save(
