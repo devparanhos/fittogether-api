@@ -7,6 +7,7 @@ import br.com.fitogether.api.core.exception.custom.ValidateCodeException
 import br.com.fitogether.api.core.exception.global.GlobalException
 import br.com.fitogether.api.core.extension.transformToFieldString
 import jakarta.mail.MessagingException
+import org.hibernate.LazyInitializationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -155,6 +156,45 @@ class GlobalExceptionHandler {
                 errors = null
             ),
             HttpStatus.BAD_REQUEST
+        )
+    }
+
+    @ExceptionHandler(Exception::class)
+    fun handleGeneralException(exception: Exception): ResponseEntity<GlobalException> {
+        return ResponseEntity(
+            GlobalException(
+                statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                message = exception.message,
+                internalCode = "",
+                errors = null
+            ),
+            HttpStatus.INTERNAL_SERVER_ERROR
+        )
+    }
+
+    @ExceptionHandler(LazyInitializationException::class)
+    fun handleLazyInitializationException(exception: LazyInitializationException): ResponseEntity<GlobalException> {
+        return ResponseEntity(
+            GlobalException(
+                statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                message = GeneralError.ISV001.message,
+                internalCode = GeneralError.ISV001.code,
+                errors = null
+            ),
+            HttpStatus.INTERNAL_SERVER_ERROR
+        )
+    }
+
+    @ExceptionHandler(AccessDeniedException::class)
+    fun handleAccessDeniedException(exception: AccessDeniedException): ResponseEntity<GlobalException> {
+        return ResponseEntity(
+            GlobalException(
+                statusCode = HttpStatus.FORBIDDEN.value(),
+                message = GeneralError.EAUTH003.message,
+                internalCode = GeneralError.EAUTH003.code,
+                errors = null
+            ),
+            HttpStatus.FORBIDDEN
         )
     }
 }
