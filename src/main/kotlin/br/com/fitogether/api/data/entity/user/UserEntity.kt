@@ -4,10 +4,12 @@ import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
 import br.com.fitogether.api.data.entity.code.ValidationCodeEntity
 import br.com.fitogether.api.data.entity.exercise.ExerciseEntity
+import br.com.fitogether.api.data.entity.exercise.UserExerciseEntity
 import br.com.fitogether.api.data.entity.experience.ExperienceEntity
 import br.com.fitogether.api.data.entity.gender.GenderEntity
 import br.com.fitogether.api.data.entity.goal.GoalEntity
 import br.com.fitogether.api.data.entity.preference.PreferenceEntity
+import com.fasterxml.jackson.annotation.JsonManagedReference
 
 import jakarta.persistence.*
 import org.hibernate.annotations.Formula
@@ -66,13 +68,9 @@ data class UserEntity(
     )
     val goals: MutableSet<GoalEntity> = mutableSetOf(),
 
-    @ManyToMany
-    @JoinTable(
-        name = "user_exercises",
-        joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
-        inverseJoinColumns = [JoinColumn(name = "exercise_id", referencedColumnName = "id")]
-    )
-    val exercises: MutableSet<ExerciseEntity> = mutableSetOf(),
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @JsonManagedReference
+    var userExercises: MutableList<UserExerciseEntity> = mutableListOf(),
 
     @ManyToOne
     @JoinColumn(name = "experience_id")
