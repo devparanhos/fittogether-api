@@ -6,6 +6,7 @@ import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
 import br.com.fitogether.api.core.exception.custom.RuleException
 import br.com.fitogether.api.core.exception.custom.ValidateCodeException
+import br.com.fitogether.api.data.entity.exercise.UserExerciseEntity
 import br.com.fitogether.api.data.entity.password_reset_token.PasswordResetTokenEntity
 import br.com.fitogether.api.data.entity.preference.PreferenceEntity
 import br.com.fitogether.api.data.entity.preference.PreferenceScheduleEntity
@@ -14,6 +15,7 @@ import br.com.fitogether.api.data.mapper.user.*
 import br.com.fitogether.api.data.mapper.validationCode.toValidateEmailResponse
 import br.com.fitogether.api.data.repository.code.ValidationCodeRepository
 import br.com.fitogether.api.data.repository.exercise.ExerciseRepository
+import br.com.fitogether.api.data.repository.exercise.UserExerciseRepository
 import br.com.fitogether.api.data.repository.experience.ExperienceRepository
 import br.com.fitogether.api.data.repository.gender.GenderRepository
 import br.com.fitogether.api.data.repository.goal.GoalRepository
@@ -59,6 +61,7 @@ class UserService(
     private val validationCodeRepository: ValidationCodeRepository,
     private val passwordResetTokenRepository: PasswordResetTokenRepository,
     private val gymRepository: GymRepository,
+    private val userExerciseRepository: UserExerciseRepository,
     private val validationCodeService: ValidationCodeService,
     private val emailService: EmailService,
     private val s3Service: S3Service,
@@ -196,19 +199,28 @@ class UserService(
     fun setUserExercises(userId: Long, exercises: List<Exercise>): UserResponse {
         try {
             val user = userRepository.findById(userId).orElseThrow()
-            val exerciseEntity = exerciseRepository.findAllById(exercises.map { it.id }).toMutableSet()
+            val findExercises = exerciseRepository.findAllById(exercises.map { it.id }).toMutableSet()
 
-            user.exercises.clear()
-            user.exercises.addAll(exerciseEntity)
+            // deleta os exercicios existentes
+            userExerciseRepository.findByUserId(userId).forEach { userExercise ->
+                userExercise.softDelete()
+            }
+
+            // salva os novos exercicios
+            val userExercises = findExercises.map { exercise ->
+                UserExerciseEntity(
+                    user = user,
+                    exercise = exercise
+                )
+            }
 
             return userRepository.save(
-                user.copy(registrationStep = RegistrationStep.EXPERIENCE)
+                user.copy(registrationStep = RegistrationStep.EXPERIENCE, userExercises = userExercises.toMutableList())
             ).toModel().toUserResponse()
         } catch (exception: Exception) {
             throw exception
         }
     }
-
 
     fun setUserExperience(userId: Long, experienceId: Long): UserResponse {
         try {
