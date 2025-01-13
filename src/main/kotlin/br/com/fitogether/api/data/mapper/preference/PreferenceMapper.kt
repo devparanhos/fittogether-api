@@ -10,7 +10,7 @@ fun PreferenceEntity.toModel() = Preference(
     startAge = this.startAge,
     endAge = this.endAge,
     radiusDistance = this.radiusDistance,
-    genders = this.genders.map { it.toModel() },
-    gyms = this.gyms.map { it.toModel() },
+    genders = this.preferenceGenders.map { it.gender.toModel() },
+    gyms = this.preferenceGyms.map { it.gym.toModel() },
     schedules = this.schedules.map { it.toModel() },
 )

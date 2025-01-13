@@ -1,8 +1,10 @@
 package br.com.fitogether.api.data.entity.preference
 
 import br.com.fitogether.api.data.entity.gender.GenderEntity
+import br.com.fitogether.api.data.entity.goal.UserGoalEntity
 import br.com.fitogether.api.data.entity.gym.GymEntity
 import br.com.fitogether.api.data.entity.user.UserEntity
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -35,21 +37,13 @@ data class PreferenceEntity(
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     val user: UserEntity? = null,
 
-    @OneToMany
-    @JoinTable(
-        name = "preference_genders",
-        joinColumns = [JoinColumn(name = "preference_id", referencedColumnName = "id")],
-        inverseJoinColumns = [JoinColumn(name = "gender_id", referencedColumnName = "id")]
-    )
-    val genders: MutableSet<GenderEntity> = mutableSetOf(),
+    @OneToMany(mappedBy = "preference", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @JsonManagedReference
+    var preferenceGenders: MutableList<PreferenceGenderEntity> = mutableListOf(),
 
-    @OneToMany
-    @JoinTable(
-        name = "preference_gyms",
-        joinColumns = [JoinColumn(name = "preference_id", referencedColumnName = "id")],
-        inverseJoinColumns = [JoinColumn(name = "gym_id", referencedColumnName = "id")]
-    )
-    val gyms: MutableSet<GymEntity> = mutableSetOf(),
+    @OneToMany(mappedBy = "preference", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @JsonManagedReference
+    var preferenceGyms: MutableList<PreferenceGymEntity> = mutableListOf(),
 
     @OneToMany(mappedBy = "preference", cascade = [CascadeType.ALL])
     val schedules: MutableList<PreferenceScheduleEntity> = mutableListOf()
