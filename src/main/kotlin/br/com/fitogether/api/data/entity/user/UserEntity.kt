@@ -61,14 +61,6 @@ data class UserEntity(
     @JoinColumn(name = "gender_id")
     val gender: GenderEntity? = null,
 
-//    @ManyToMany
-//    @JoinTable(
-//        name = "user_goals",
-//        joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
-//        inverseJoinColumns = [JoinColumn(name = "goal_id", referencedColumnName = "id")]
-//    )
-//    val goals: MutableSet<GoalEntity> = mutableSetOf(),
-
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     @JsonManagedReference
     var userGoals: MutableList<UserGoalEntity> = mutableListOf(),
