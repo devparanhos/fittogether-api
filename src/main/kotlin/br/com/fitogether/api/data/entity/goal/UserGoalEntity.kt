@@ -1,7 +1,6 @@
 package br.com.fitogether.api.data.entity.goal
 
 import br.com.fitogether.api.data.entity.BaseEntity
-import br.com.fitogether.api.data.entity.exercise.ExerciseEntity
 import br.com.fitogether.api.data.entity.user.UserEntity
 import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
