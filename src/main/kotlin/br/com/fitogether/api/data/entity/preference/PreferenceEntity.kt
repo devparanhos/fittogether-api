@@ -45,6 +45,6 @@ data class PreferenceEntity(
     @JsonManagedReference
     var preferenceGyms: MutableList<PreferenceGymEntity> = mutableListOf(),
 
-    @OneToMany(mappedBy = "preference", cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "preference", cascade = [CascadeType.ALL], orphanRemoval = true)
     val schedules: MutableList<PreferenceScheduleEntity> = mutableListOf()
 )

@@ -353,9 +353,8 @@ class UserService(
             }
             existingPreferences.preferenceGyms.addAll(preferenceGyms)
 
-            preferenceScheduleRepository.deleteByPreference(existingPreferences)
-
-            val updatedSchedules = preferences.schedule.map { scheduleData ->
+            existingPreferences.schedules.clear()
+            val schedules = preferences.schedule.map { scheduleData ->
                 PreferenceScheduleEntity(
                     preference = existingPreferences,
                     dayWeek = scheduleData.day,
@@ -363,11 +362,9 @@ class UserService(
                     endTime = scheduleData.endTime
                 )
             }
-            existingPreferences.schedules.clear()
-            existingPreferences.schedules.addAll(updatedSchedules)
+            existingPreferences.schedules.addAll(schedules)
 
             preferenceRepository.save(existingPreferences)
-
             return userRepository.save(user.copy(preferences = existingPreferences)).toModel().toUserResponse()
         } catch (exception: Exception) {
             throw exception
