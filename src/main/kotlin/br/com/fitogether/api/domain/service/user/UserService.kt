@@ -6,19 +6,27 @@ import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
 import br.com.fitogether.api.core.exception.custom.RuleException
 import br.com.fitogether.api.core.exception.custom.ValidateCodeException
+import br.com.fitogether.api.data.entity.exercise.UserExerciseEntity
+import br.com.fitogether.api.data.entity.goal.UserGoalEntity
 import br.com.fitogether.api.data.entity.password_reset_token.PasswordResetTokenEntity
 import br.com.fitogether.api.data.entity.preference.PreferenceEntity
+import br.com.fitogether.api.data.entity.preference.PreferenceGenderEntity
+import br.com.fitogether.api.data.entity.preference.PreferenceGymEntity
 import br.com.fitogether.api.data.entity.preference.PreferenceScheduleEntity
 import br.com.fitogether.api.data.entity.user.UserEntity
 import br.com.fitogether.api.data.mapper.user.*
 import br.com.fitogether.api.data.mapper.validationCode.toValidateEmailResponse
 import br.com.fitogether.api.data.repository.code.ValidationCodeRepository
 import br.com.fitogether.api.data.repository.exercise.ExerciseRepository
+import br.com.fitogether.api.data.repository.exercise.UserExerciseRepository
 import br.com.fitogether.api.data.repository.experience.ExperienceRepository
 import br.com.fitogether.api.data.repository.gender.GenderRepository
 import br.com.fitogether.api.data.repository.goal.GoalRepository
+import br.com.fitogether.api.data.repository.goal.UserGoalRepository
 import br.com.fitogether.api.data.repository.gym.GymRepository
 import br.com.fitogether.api.data.repository.password_reset_token.PasswordResetTokenRepository
+import br.com.fitogether.api.data.repository.preference.PreferenceGenderRepository
+import br.com.fitogether.api.data.repository.preference.PreferenceGymRepository
 import br.com.fitogether.api.data.repository.preference.PreferenceRepository
 import br.com.fitogether.api.data.repository.preference.PreferenceScheduleRepository
 import br.com.fitogether.api.data.repository.user.UserRepository
@@ -59,6 +67,10 @@ class UserService(
     private val validationCodeRepository: ValidationCodeRepository,
     private val passwordResetTokenRepository: PasswordResetTokenRepository,
     private val gymRepository: GymRepository,
+    private val userExerciseRepository: UserExerciseRepository,
+    private val userGoalRepository: UserGoalRepository,
+    private val preferenceGenderRepository: PreferenceGenderRepository,
+    private val preferenceGymRepository: PreferenceGymRepository,
     private val validationCodeService: ValidationCodeService,
     private val emailService: EmailService,
     private val s3Service: S3Service,
@@ -180,13 +192,23 @@ class UserService(
     fun setUserGoals(userId: Long, goals: List<Goal>): UserResponse {
         try {
             val user = userRepository.findById(userId).orElseThrow()
-            val goalsEntity = goalRepository.findAllById(goals.map { it.id }).toMutableSet()
+            val findGoals = goalRepository.findAllById(goals.map { it.id }).toMutableSet()
 
-            user.goals.clear()
-            user.goals.addAll(goalsEntity)
+            // deleta os objetivos existentes
+            userGoalRepository.findByUserId(userId).forEach { userGoal ->
+                userGoal.softDelete()
+            }
+
+            // salva os novos objetivos
+            val userGoals = findGoals.map { goal ->
+                UserGoalEntity(
+                    user = user,
+                    goal = goal
+                )
+            }
 
             return userRepository.save(
-                user.copy(registrationStep = RegistrationStep.EXERCISES)
+                user.copy(registrationStep = RegistrationStep.EXERCISES, userGoals = userGoals.toMutableList())
             ).toModel().toUserResponse()
         } catch (exception: Exception) {
             throw exception
@@ -196,19 +218,28 @@ class UserService(
     fun setUserExercises(userId: Long, exercises: List<Exercise>): UserResponse {
         try {
             val user = userRepository.findById(userId).orElseThrow()
-            val exerciseEntity = exerciseRepository.findAllById(exercises.map { it.id }).toMutableSet()
+            val findExercises = exerciseRepository.findAllById(exercises.map { it.id }).toMutableSet()
 
-            user.exercises.clear()
-            user.exercises.addAll(exerciseEntity)
+            // deleta os exercicios existentes
+            userExerciseRepository.findByUserId(userId).forEach { userExercise ->
+                userExercise.softDelete()
+            }
+
+            // salva os novos exercicios
+            val userExercises = findExercises.map { exercise ->
+                UserExerciseEntity(
+                    user = user,
+                    exercise = exercise
+                )
+            }
 
             return userRepository.save(
-                user.copy(registrationStep = RegistrationStep.EXPERIENCE)
+                user.copy(registrationStep = RegistrationStep.EXPERIENCE, userExercises = userExercises.toMutableList())
             ).toModel().toUserResponse()
         } catch (exception: Exception) {
             throw exception
         }
     }
-
 
     fun setUserExperience(userId: Long, experienceId: Long): UserResponse {
         try {
@@ -250,8 +281,21 @@ class UserService(
                 )
             )
 
-            savedPreferences.genders.addAll(genders)
-            savedPreferences.gyms.addAll(gyms)
+            val preferenceGenders = genders.map { gender ->
+                PreferenceGenderEntity(
+                    preference = savedPreferences,
+                    gender = gender
+                )
+            }
+            savedPreferences.preferenceGenders.addAll(preferenceGenders)
+
+            val preferenceGyms = gyms.map { gym ->
+                PreferenceGymEntity(
+                    preference = savedPreferences,
+                    gym = gym
+                )
+            }
+            savedPreferences.preferenceGyms.addAll(preferenceGyms)
 
             val schedules = preferences.schedule.map { scheduleData ->
                 PreferenceScheduleEntity(
@@ -261,7 +305,6 @@ class UserService(
                     endTime = scheduleData.endTime
                 )
             }
-
             savedPreferences.schedules.addAll(schedules)
 
             return userRepository.save(
@@ -289,13 +332,26 @@ class UserService(
             existingPreferences.radiusDistance = preferences.radiusDistance
             existingPreferences.updatedAt = LocalDateTime.now()
 
-            val genders = genderRepository.findAllById(preferences.genders.map { it.id }).toMutableSet()
-            existingPreferences.genders.clear()
-            existingPreferences.genders.addAll(genders)
+            existingPreferences.preferenceGenders.clear()
 
+            val genders = genderRepository.findAllById(preferences.genders.map { it.id }).toMutableSet()
+            val preferenceGenders = genders.map { gender ->
+                PreferenceGenderEntity(
+                    preference = existingPreferences,
+                    gender = gender
+                )
+            }
+            existingPreferences.preferenceGenders.addAll(preferenceGenders)
+
+            existingPreferences.preferenceGyms.clear()
             val gyms = gymRepository.findAllById(preferences.gyms.map { it.id }).toMutableSet()
-            existingPreferences.gyms.clear()
-            existingPreferences.gyms.addAll(gyms)
+            val preferenceGyms = gyms.map { gym ->
+                PreferenceGymEntity(
+                    preference = existingPreferences,
+                    gym = gym
+                )
+            }
+            existingPreferences.preferenceGyms.addAll(preferenceGyms)
 
             preferenceScheduleRepository.deleteByPreference(existingPreferences)
 

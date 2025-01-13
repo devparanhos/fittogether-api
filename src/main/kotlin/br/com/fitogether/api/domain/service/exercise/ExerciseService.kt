@@ -83,6 +83,8 @@ class ExerciseService(
                 endTime = LocalDateTime.now()
             }
 
+            existingExercisePool?.softDelete()
+
             // Cria um novo registro
             val exercisePool = ExercisePoolEntity(
                 user = user, exercise = exercise, startTime = LocalDateTime.now(), endTime = null
