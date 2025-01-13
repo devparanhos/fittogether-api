@@ -7,6 +7,7 @@ import br.com.fitogether.api.core.enums.UserRegistrationStatus
 import br.com.fitogether.api.core.exception.custom.RuleException
 import br.com.fitogether.api.core.exception.custom.ValidateCodeException
 import br.com.fitogether.api.data.entity.exercise.UserExerciseEntity
+import br.com.fitogether.api.data.entity.goal.UserGoalEntity
 import br.com.fitogether.api.data.entity.password_reset_token.PasswordResetTokenEntity
 import br.com.fitogether.api.data.entity.preference.PreferenceEntity
 import br.com.fitogether.api.data.entity.preference.PreferenceScheduleEntity
@@ -19,6 +20,7 @@ import br.com.fitogether.api.data.repository.exercise.UserExerciseRepository
 import br.com.fitogether.api.data.repository.experience.ExperienceRepository
 import br.com.fitogether.api.data.repository.gender.GenderRepository
 import br.com.fitogether.api.data.repository.goal.GoalRepository
+import br.com.fitogether.api.data.repository.goal.UserGoalRepository
 import br.com.fitogether.api.data.repository.gym.GymRepository
 import br.com.fitogether.api.data.repository.password_reset_token.PasswordResetTokenRepository
 import br.com.fitogether.api.data.repository.preference.PreferenceRepository
@@ -62,6 +64,7 @@ class UserService(
     private val passwordResetTokenRepository: PasswordResetTokenRepository,
     private val gymRepository: GymRepository,
     private val userExerciseRepository: UserExerciseRepository,
+    private val userGoalRepository: UserGoalRepository,
     private val validationCodeService: ValidationCodeService,
     private val emailService: EmailService,
     private val s3Service: S3Service,
@@ -183,13 +186,23 @@ class UserService(
     fun setUserGoals(userId: Long, goals: List<Goal>): UserResponse {
         try {
             val user = userRepository.findById(userId).orElseThrow()
-            val goalsEntity = goalRepository.findAllById(goals.map { it.id }).toMutableSet()
+            val findGoals = goalRepository.findAllById(goals.map { it.id }).toMutableSet()
 
-            user.goals.clear()
-            user.goals.addAll(goalsEntity)
+            // deleta os objetivos existentes
+            userGoalRepository.findByUserId(userId).forEach { userGoal ->
+                userGoal.softDelete()
+            }
+
+            // salva os novos objetivos
+            val userGoals = findGoals.map { goal ->
+                UserGoalEntity(
+                    user = user,
+                    goal = goal
+                )
+            }
 
             return userRepository.save(
-                user.copy(registrationStep = RegistrationStep.EXERCISES)
+                user.copy(registrationStep = RegistrationStep.EXERCISES, userGoals = userGoals.toMutableList())
             ).toModel().toUserResponse()
         } catch (exception: Exception) {
             throw exception
