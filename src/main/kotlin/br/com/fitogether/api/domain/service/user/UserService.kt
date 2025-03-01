@@ -99,11 +99,10 @@ class UserService(
     fun validateCode(request: ValidateCodeRequest): ValidateCodeResponse {
         try {
             if (validationCodeService.validateCode(request = request)) {
-                val user = userRepository.findByEmail(request.email).orElseThrow {
-                    RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado.")
-                }
+                val user = userRepository.findByEmail(request.email).getOrNull()
                 return ValidateCodeResponse(
-                    userId = user.id, registrationStep = user.registrationStep
+                    userId = user?.id,
+                    registrationStep = user?.registrationStep ?: RegistrationStep.START
                 )
             } else {
                 throw ValidateCodeException(
