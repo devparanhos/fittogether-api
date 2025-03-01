@@ -44,7 +44,10 @@ import br.com.fitogether.api.domain.model.goal.Goal
 import br.com.fitogether.api.domain.service.aws.S3Service
 import br.com.fitogether.api.domain.service.code.ValidationCodeService
 import br.com.fitogether.api.domain.service.email.EmailService
+import com.apple.eawt.Application
 import jakarta.transaction.Transactional
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -78,6 +81,8 @@ class UserService(
     private val bCryptPasswordEncoder: BCryptPasswordEncoder,
     private val securityConfig: SecurityConfig
 ) {
+    private val logger: Logger = LoggerFactory.getLogger(Application::class.java)
+
     fun validateEmail(request: ValidateEmailRequest): ValidateEmailResponse {
         try {
             val validationCode = validationCodeRepository.findByEmail(request.email)
@@ -116,6 +121,8 @@ class UserService(
 
     fun createUser(request: CreateUserRequest): AuthenticationResponse {
         try {
+            logger.info("Creating user")
+
             val user = userRepository.save(
                 request.copy(
                     password = bCryptPasswordEncoder.encode(request.password),
