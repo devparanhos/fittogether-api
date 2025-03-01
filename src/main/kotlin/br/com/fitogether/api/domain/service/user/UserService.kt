@@ -53,6 +53,7 @@ import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDateTime
 import java.util.*
 import javax.security.auth.login.LoginException
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 @Transactional
@@ -79,12 +80,13 @@ class UserService(
 ) {
     fun validateEmail(request: ValidateEmailRequest): ValidateEmailResponse {
         try {
-            val user = userRepository.findByEmail(request.email).orElseThrow {
-                RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado.")
-            }
             val validationCode = validationCodeRepository.findByEmail(request.email)
 
-            if (user.registrationStatus != UserRegistrationStatus.CONCLUDED && validationCode?.validated != true) {
+            validationCode?.let {
+                if (!validationCode.validated) {
+                    validationCodeService.setValidationCode(email = request.email)
+                }
+            } ?: run {
                 validationCodeService.setValidationCode(email = request.email)
             }
 
