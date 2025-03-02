@@ -3,7 +3,6 @@ package br.com.fitogether.api.domain.service.user
 import br.com.fitogether.api.config.security.SecurityConfig
 import br.com.fitogether.api.core.enums.GeneralError
 import br.com.fitogether.api.core.enums.RegistrationStep
-import br.com.fitogether.api.core.enums.UserRegistrationStatus
 import br.com.fitogether.api.core.exception.custom.RuleException
 import br.com.fitogether.api.core.exception.custom.ValidateCodeException
 import br.com.fitogether.api.data.entity.exercise.UserExerciseEntity
@@ -44,10 +43,7 @@ import br.com.fitogether.api.domain.model.goal.Goal
 import br.com.fitogether.api.domain.service.aws.S3Service
 import br.com.fitogether.api.domain.service.code.ValidationCodeService
 import br.com.fitogether.api.domain.service.email.EmailService
-import com.apple.eawt.Application
 import jakarta.transaction.Transactional
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
