@@ -81,8 +81,6 @@ class UserService(
     private val bCryptPasswordEncoder: BCryptPasswordEncoder,
     private val securityConfig: SecurityConfig
 ) {
-    private val logger: Logger = LoggerFactory.getLogger(Application::class.java)
-
     fun validateEmail(request: ValidateEmailRequest): ValidateEmailResponse {
         try {
             val validationCode = validationCodeRepository.findByEmail(request.email)
@@ -121,8 +119,6 @@ class UserService(
 
     fun createUser(request: CreateUserRequest): AuthenticationResponse {
         try {
-            logger.info("Creating user")
-
             val user = userRepository.save(
                 request.copy(
                     password = bCryptPasswordEncoder.encode(request.password),
