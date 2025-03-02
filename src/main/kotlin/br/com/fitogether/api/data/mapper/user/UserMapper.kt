@@ -71,5 +71,6 @@ fun CreateUserRequest.toEntity() = UserEntity(
     password = this.password,
     cellphone = this.cellphone,
     name = this.name,
-    birthDate = this.birthDate.formatDate()
+    birthDate = this.birthDate.formatDate(),
+    level = 0
 )
