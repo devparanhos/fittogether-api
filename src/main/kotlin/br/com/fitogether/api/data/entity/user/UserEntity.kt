@@ -83,7 +83,7 @@ data class UserEntity(
     val photo: String = "",
 
     @Column(nullable = false)
-    val level: Int? = null,
+    val level: Int? = 0,
 
     @Formula(
         """

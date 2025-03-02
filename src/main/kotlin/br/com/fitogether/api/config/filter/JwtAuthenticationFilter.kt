@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtException
 import org.springframework.web.filter.OncePerRequestFilter
+import kotlin.jvm.optionals.getOrNull
 
 @Configuration
 class JwtAuthenticationFilter(
@@ -37,9 +38,7 @@ class JwtAuthenticationFilter(
             try {
                 val jwt = jwtDecoder.decode(token)
                 val username = jwt.subject
-                val user = userRepository.findByUsername(username).orElseThrow {
-                    RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado.")
-                }
+                val user = userRepository.findByUsername(username).getOrNull()
 
                 user?.let {
                     if (it.accessToken == token) {
