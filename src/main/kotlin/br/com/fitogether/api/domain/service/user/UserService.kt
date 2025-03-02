@@ -141,9 +141,7 @@ class UserService(
 
     fun isEmailAvailable(email: String): UserEntity? {
         try {
-            return userRepository.findByEmail(email = email).orElseThrow {
-                RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado.")
-            }
+            return userRepository.findByEmail(email = email).getOrNull()
         } catch (exception: Exception) {
             throw exception
         }
@@ -167,9 +165,7 @@ class UserService(
 
     fun isUsernameAvailable(username: String): UserEntity? {
         try {
-            return userRepository.findByUsername(username = username).orElseThrow {
-                RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado.")
-            }
+            return userRepository.findByUsername(username = username).getOrNull()
         } catch (exception: Exception) {
             throw exception
         }
