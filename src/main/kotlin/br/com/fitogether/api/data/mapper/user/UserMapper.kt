@@ -1,5 +1,6 @@
 package br.com.fitogether.api.data.mapper.user
 
+import br.com.fitogether.api.core.enums.RegistrationStep
 import br.com.fitogether.api.core.enums.UserRegistrationStatus
 import br.com.fitogether.api.core.extension.formatDate
 import br.com.fitogether.api.data.entity.user.UserEntity
@@ -69,7 +70,8 @@ fun User.toUserResponse() = UserResponse(
 fun CreateUserRequest.toEntity() = UserEntity(
     email = this.email,
     password = this.password,
-    cellphone = this.cellphone,
     name = this.name,
-    birthDate = this.birthDate.formatDate()
+    birthDate = this.birthDate.formatDate(),
+    registrationStatus = UserRegistrationStatus.CREATED,
+    registrationStep = RegistrationStep.FINISHED
 )
