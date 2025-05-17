@@ -13,5 +13,11 @@ data class GetGymsRequest(
     @field:NotNull(message = "Longitude is required")
     @field:Min(value = -180, message = "Longitude must be >= -180")
     @field:Max(value = 180, message = "Longitude must be <= 180")
-    val lng: Double?
+    val lng: Double?,
+
+    @field:Min(value = 5000, message = "Longitude must be >= 5000 meters")
+    @field:Max(value = 30000, message = "Longitude must be <= 30000 meters")
+    val radius: Double = 15.00,
+
+    val exercise: List<String>? = null
 )

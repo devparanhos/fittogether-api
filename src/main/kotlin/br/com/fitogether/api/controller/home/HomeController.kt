@@ -18,10 +18,9 @@ class HomeController(
     @GetMapping()
     fun getHomeScreen(
         @AuthenticationPrincipal userId: Long,
-        @Valid homeScreenRequest: HomeScreenRequest
     ): HomeScreenResponse {
         return execute {
-            homeScreenService.buildHomeScreen(userId, homeScreenRequest)
+            homeScreenService.buildHomeScreen(userId)
         }
     }
 }

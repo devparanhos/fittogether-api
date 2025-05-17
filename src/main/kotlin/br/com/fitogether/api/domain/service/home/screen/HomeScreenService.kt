@@ -4,9 +4,11 @@ import br.com.fitogether.api.core.exception.custom.RuleException
 import br.com.fitogether.api.data.entity.user.UserEntity
 import br.com.fitogether.api.data.mapper.exercise.toModel
 import br.com.fitogether.api.data.mapper.gym.toModel
+import br.com.fitogether.api.data.mapper.suggestion.toModelList
 import br.com.fitogether.api.data.mapper.user.toProfileModel
 import br.com.fitogether.api.data.repository.exercise.ExerciseRepository
 import br.com.fitogether.api.data.repository.gym.GymRepository
+import br.com.fitogether.api.data.repository.suggestion.SuggestionRepository
 import br.com.fitogether.api.data.repository.user.UserRepository
 import br.com.fitogether.api.domain.dto.request.home.HomeScreenRequest
 import br.com.fitogether.api.domain.dto.response.home.screen.HomeScreenResponse
@@ -17,39 +19,24 @@ import org.springframework.stereotype.Service
 @Service
 class HomeScreenService(
     private val userRepository: UserRepository,
-    private val gymRepository: GymRepository,
-    private val exerciseRepository: ExerciseRepository
+    private val exerciseRepository: ExerciseRepository,
+    private val suggestionRepository: SuggestionRepository
+
 ) {
-    fun buildHomeScreen(userId: Long, payload: HomeScreenRequest): HomeScreenResponse {
+    fun buildHomeScreen(userId: Long): HomeScreenResponse {
 
         val user = userRepository.findById(userId).orElseThrow {
             RuleException(HttpStatus.NOT_FOUND, "Usuário não encontrado")
         }
 
-        val gyms: List<Gym>
-        if (payload.exercise == null) {
-            gyms = gymRepository.findGymsWithinLatLng(
-                lat = payload.lat,
-                lng = payload.lng,
-                radius = payload.radius
-            )
-                .map { it.toModel() }
-        } else {
-            gyms = gymRepository.findGymsWithinLatLngAndExercise(
-                lat = payload.lat,
-                lng = payload.lng,
-                radius = payload.radius,
-                exercises = payload.exercise
-            )
-                .map { it.toModel() }
-        }
-
         val exercises = exerciseRepository.findAll().map { it.toModel() }
+
+        val suggestions = suggestionRepository.findByTypeAndDeletedAtIsNull("FINISH_REGISTRATION").toModelList()
 
         return HomeScreenResponse(
             profile = user.toProfileModel(),
             exercises = exercises,
-            gyms = gyms,
+            suggestions = suggestions
         )
     }
 }
