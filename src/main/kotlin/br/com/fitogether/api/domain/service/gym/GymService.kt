@@ -12,10 +12,23 @@ import org.springframework.stereotype.Service
 class GymService(
     private val gymRepository: GymRepository
 ) {
-    fun getGyms(lat: Double, lng: Double): List<GymResponse> {
-        val gyms =
-            gymRepository.findGymsWithinLatLng(lat = lat, lng = lng, radius = 15000.0).map { it.toModel().toGymResponse() }
-        return gyms
+    fun getGyms(lat: Double, lng: Double, radius: Double, exercises: List<String>?): List<GymResponse> {
+        if (exercises == null) {
+            return gymRepository.findGymsWithinLatLng(
+                lat = lat,
+                lng = lng,
+                radius = radius
+            )
+                .map { it.toModel().toGymResponse() }
+        } else {
+            return gymRepository.findGymsWithinLatLngAndExercise(
+                lat = lat,
+                lng = lng,
+                radius = radius,
+                exercises = exercises
+            )
+                .map { it.toModel().toGymResponse() }
+        }
     }
 }
 

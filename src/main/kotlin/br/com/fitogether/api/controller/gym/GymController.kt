@@ -29,6 +29,6 @@ class GymController(
     fun getGyms(
         @Valid getGymsRequest: GetGymsRequest
     ): List<GymResponse> {
-        return gymService.getGyms(getGymsRequest.lat!!, getGymsRequest.lng!!)
+        return gymService.getGyms(getGymsRequest.lat!!, getGymsRequest.lng!!, getGymsRequest.radius, getGymsRequest.exercise)
     }
 }

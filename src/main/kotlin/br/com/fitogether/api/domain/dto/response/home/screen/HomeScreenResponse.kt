@@ -1,5 +1,6 @@
 package br.com.fitogether.api.domain.dto.response.home.screen
 
+import br.com.fitogether.api.domain.model.Suggestion
 import br.com.fitogether.api.domain.model.exercise.Exercise
 import br.com.fitogether.api.domain.model.gym.Gym
 import br.com.fitogether.api.domain.model.user.Profile
@@ -12,6 +13,6 @@ data class HomeScreenResponse(
     @field:JsonProperty("exercises")
     val exercises: List<Exercise>?,
 
-    @field:JsonProperty("gyms")
-    val gyms: List<Gym>
+    @field:JsonProperty("suggestions")
+    val suggestions: List<Suggestion>?
 )
