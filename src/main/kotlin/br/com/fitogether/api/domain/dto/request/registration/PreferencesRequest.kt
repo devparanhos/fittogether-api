@@ -1,7 +1,7 @@
 package br.com.fitogether.api.domain.dto.request.registration
 
 import br.com.fitogether.api.domain.model.gender.Gender
-import br.com.fitogether.api.domain.model.gym.Gym
+import br.com.fitogether.api.domain.model.unit.Unit
 import br.com.fitogether.api.domain.validation.gender.annotation.GenderExists
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -21,9 +21,9 @@ data class GenderIdRequest(
     val id: Long
 )
 
-data class GymIdRequest(
+data class UnitIdRequest(
     @Schema(
-        description = "Identificador único da gym",
+        description = "Identificador único da unidade (unit)",
         example = "1"
     )
     val id: Long
@@ -62,14 +62,14 @@ data class PreferencesRequest(
     @field:Size(min = 1, message = "Você precisa informar os dias e horários de preferência")
     val schedule: List<@Valid ScheduleItem>,
 
-    @field:JsonProperty("gyms_id")
-    @field:JsonAlias("gyms_id")
-    @field:NotNull(message = "Você precisa informar a(s) academia(s) que você gosta de frequentar")
+    @field:JsonProperty("units_id")
+    @field:JsonAlias("units_id", "stores_id", "gyms_id")
+    @field:NotNull(message = "Você precisa informar a(s) unidade(s) que você gosta de frequentar")
     @Schema(
-        description = "Lista de IDs de gym",
+        description = "Lista de IDs de unidades (units)",
         example = "[{\"id\": 1}, {\"id\": 2}]"
     )
-    val gyms: List<GymIdRequest>,
+    val units: List<UnitIdRequest>,
 )
 
 data class ScheduleItem(

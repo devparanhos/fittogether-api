@@ -2,7 +2,7 @@ package br.com.fitogether.api.data.entity.preference
 
 import br.com.fitogether.api.data.entity.gender.GenderEntity
 import br.com.fitogether.api.data.entity.goal.UserGoalEntity
-import br.com.fitogether.api.data.entity.gym.GymEntity
+import br.com.fitogether.api.data.entity.unit.UnitEntity
 import br.com.fitogether.api.data.entity.user.UserEntity
 import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
@@ -43,7 +43,7 @@ data class PreferenceEntity(
 
     @OneToMany(mappedBy = "preference", cascade = [CascadeType.ALL], orphanRemoval = true)
     @JsonManagedReference
-    var preferenceGyms: MutableList<PreferenceGymEntity> = mutableListOf(),
+    var preferenceUnits: MutableList<PreferenceUnitEntity> = mutableListOf(),
 
     @OneToMany(mappedBy = "preference", cascade = [CascadeType.ALL], orphanRemoval = true)
     val schedules: MutableList<PreferenceScheduleEntity> = mutableListOf()

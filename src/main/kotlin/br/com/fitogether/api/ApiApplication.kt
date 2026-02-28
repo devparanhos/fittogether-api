@@ -6,8 +6,13 @@ import org.springframework.boot.runApplication
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
-class ApiApplication
+class ApiApplication {
 
-fun main(args: Array<String>) {
-	runApplication<ApiApplication>(*args)
+	companion object {
+		@JvmStatic
+		fun main(args: Array<String>) {
+			runApplication<ApiApplication>(*args)
+		}
+	}
 }
+ 

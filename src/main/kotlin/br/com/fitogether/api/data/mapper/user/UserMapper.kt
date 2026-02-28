@@ -69,9 +69,10 @@ fun User.toUserResponse() = UserResponse(
 
 fun CreateUserRequest.toEntity() = UserEntity(
     email = this.email,
-    password = this.password,
+    username = this.username,
     name = this.name,
+    password = this.password,
     birthDate = this.birthDate.formatDate(),
     registrationStatus = UserRegistrationStatus.CREATED,
-    registrationStep = RegistrationStep.FINISHED
+    registrationStep = RegistrationStep.UNFINISHED
 )

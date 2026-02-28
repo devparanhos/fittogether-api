@@ -10,7 +10,7 @@ import br.com.fitogether.api.data.entity.goal.UserGoalEntity
 import br.com.fitogether.api.data.entity.password_reset_token.PasswordResetTokenEntity
 import br.com.fitogether.api.data.entity.preference.PreferenceEntity
 import br.com.fitogether.api.data.entity.preference.PreferenceGenderEntity
-import br.com.fitogether.api.data.entity.preference.PreferenceGymEntity
+import br.com.fitogether.api.data.entity.preference.PreferenceUnitEntity
 import br.com.fitogether.api.data.entity.preference.PreferenceScheduleEntity
 import br.com.fitogether.api.data.entity.user.UserEntity
 import br.com.fitogether.api.data.mapper.user.*
@@ -22,10 +22,10 @@ import br.com.fitogether.api.data.repository.experience.ExperienceRepository
 import br.com.fitogether.api.data.repository.gender.GenderRepository
 import br.com.fitogether.api.data.repository.goal.GoalRepository
 import br.com.fitogether.api.data.repository.goal.UserGoalRepository
-import br.com.fitogether.api.data.repository.gym.GymRepository
+import br.com.fitogether.api.data.repository.unit.UnitRepository
 import br.com.fitogether.api.data.repository.password_reset_token.PasswordResetTokenRepository
 import br.com.fitogether.api.data.repository.preference.PreferenceGenderRepository
-import br.com.fitogether.api.data.repository.preference.PreferenceGymRepository
+import br.com.fitogether.api.data.repository.preference.PreferenceUnitRepository
 import br.com.fitogether.api.data.repository.preference.PreferenceRepository
 import br.com.fitogether.api.data.repository.preference.PreferenceScheduleRepository
 import br.com.fitogether.api.data.repository.user.UserRepository
@@ -66,11 +66,11 @@ class UserService(
     private val preferenceScheduleRepository: PreferenceScheduleRepository,
     private val validationCodeRepository: ValidationCodeRepository,
     private val passwordResetTokenRepository: PasswordResetTokenRepository,
-    private val gymRepository: GymRepository,
+    private val unitRepository: UnitRepository,
     private val userExerciseRepository: UserExerciseRepository,
     private val userGoalRepository: UserGoalRepository,
     private val preferenceGenderRepository: PreferenceGenderRepository,
-    private val preferenceGymRepository: PreferenceGymRepository,
+    private val preferenceUnitRepository: PreferenceUnitRepository,
     private val validationCodeService: ValidationCodeService,
     private val emailService: EmailService,
     private val s3Service: S3Service,
@@ -264,7 +264,7 @@ class UserService(
                 )
             }
             val genders = genderRepository.findAllById(preferences.genders.map { it.id }).toMutableSet()
-            val gyms = gymRepository.findAllById(preferences.gyms.map { it.id }).toMutableSet()
+            val units = unitRepository.findAllById(preferences.units.map { it.id }).toMutableSet()
 
             val savedPreferences = preferenceRepository.save(
                 PreferenceEntity(
@@ -285,13 +285,13 @@ class UserService(
             }
             savedPreferences.preferenceGenders.addAll(preferenceGenders)
 
-            val preferenceGyms = gyms.map { gym ->
-                PreferenceGymEntity(
+            val preferenceUnits = units.map { unit ->
+                PreferenceUnitEntity(
                     preference = savedPreferences,
-                    gym = gym
+                    unit = unit
                 )
             }
-            savedPreferences.preferenceGyms.addAll(preferenceGyms)
+            savedPreferences.preferenceUnits.addAll(preferenceUnits)
 
             val schedules = preferences.schedule.map { scheduleData ->
                 PreferenceScheduleEntity(
@@ -339,15 +339,15 @@ class UserService(
             }
             existingPreferences.preferenceGenders.addAll(preferenceGenders)
 
-            existingPreferences.preferenceGyms.clear()
-            val gyms = gymRepository.findAllById(preferences.gyms.map { it.id }).toMutableSet()
-            val preferenceGyms = gyms.map { gym ->
-                PreferenceGymEntity(
+            existingPreferences.preferenceUnits.clear()
+            val units = unitRepository.findAllById(preferences.units.map { it.id }).toMutableSet()
+            val preferenceUnits = units.map { unit ->
+                PreferenceUnitEntity(
                     preference = existingPreferences,
-                    gym = gym
+                    unit = unit
                 )
             }
-            existingPreferences.preferenceGyms.addAll(preferenceGyms)
+            existingPreferences.preferenceUnits.addAll(preferenceUnits)
 
             existingPreferences.schedules.clear()
             val schedules = preferences.schedule.map { scheduleData ->

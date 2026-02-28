@@ -1,7 +1,7 @@
 package br.com.fitogether.api.domain.model.preference
 
 import br.com.fitogether.api.domain.model.gender.Gender
-import br.com.fitogether.api.domain.model.gym.Gym
+import br.com.fitogether.api.domain.model.unit.Unit
 
 data class Preference(
     val id: Long?,
@@ -9,6 +9,6 @@ data class Preference(
     val endAge: Int,
     val radiusDistance: Int,
     val genders: List<Gender>,
-    val gyms: List<Gym>?,
+    val units: List<Unit>?,
     val schedules: List<PreferenceSchedule>?,
 )

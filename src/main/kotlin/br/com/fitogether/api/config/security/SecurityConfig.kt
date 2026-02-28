@@ -3,11 +3,11 @@ package br.com.fitogether.api.config.security
 import br.com.fitogether.api.config.filter.JwtAuthenticationFilter
 import br.com.fitogether.api.data.entity.user.UserEntity
 import br.com.fitogether.api.data.repository.user.UserRepository
-
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet
-import com.nimbusds.jose.proc.SecurityContext import org.springframework.beans.factory.annotation.Value
+import com.nimbusds.jose.proc.SecurityContext
+import org.springframework.beans.factory.annotation.Value
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -37,7 +37,7 @@ class SecurityConfig(
     @Value("\${security.jwt.private-key}")
     private lateinit var privateKey : RSAPrivateKey
 
-    private val publicPostEndpoints = arrayOf("/users", "users/validate-email", "/users/validate-code", "users/login", "users/forgot-password", "users/password-reset")
+    private val publicPostEndpoints = arrayOf("/users", "/users/validate-email", "/users/validate-code", "/users/login", "/users/forgot-password", "/users/password-reset")
     private val publicGetEndpoints = arrayOf("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
 
     @Bean
