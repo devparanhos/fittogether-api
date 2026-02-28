@@ -15,7 +15,7 @@ COPY . .
 COPY app.properties /app/src/main/resources/app.properties
 RUN mvn clean package -DskipTests
 
-FROM openjdk:20
+FROM eclipse-temurin:20-jre
 WORKDIR /app
 COPY --from=build ./app/target/*.jar ./fittogether-api.jar
 COPY --from=build /app/src/main/resources/app.properties ./app.properties
